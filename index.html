@@ -825,42 +825,51 @@
             try {
                 let data = null;
 
-                // 1. Intentar con SDK oficial de Supabase
+                // 1. Intentar con SDK oficial de Supabase (probando tanto 'colaboradores' como 'Colaboradores')
                 if (supabaseClient) {
-                    let res = await supabaseClient.from('colaboradores').select('*').order('ITEM', { ascending: true });
-                    if (res.error && (res.error.code === '42P01' || res.error.message.includes('not found'))) {
-                        res = await supabaseClient.from('Colaboradores').select('*').order('ITEM', { ascending: true });
-                    }
-                    if (!res.error && res.data && res.data.length > 0) {
-                        data = res.data;
-                    }
-                }
-
-                // 2. Fallback con REST API directo (Ultra rápido)
-                if (!data || data.length === 0) {
-                    let restUrl = `${SUPABASE_URL}/rest/v1/colaboradores?select=*&order=ITEM.asc`;
-                    let resp = await fetch(restUrl, {
-                        headers: {
-                            'apikey': SUPABASE_KEY,
-                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                    // Intento A: 'colaboradores'
+                    try {
+                        let res = await supabaseClient.from('colaboradores').select('*');
+                        if (res.data && res.data.length > 0) {
+                            data = res.data;
                         }
-                    });
-                    if (!resp.ok) {
-                        restUrl = `${SUPABASE_URL}/rest/v1/Colaboradores?select=*&order=ITEM.asc`;
-                        resp = await fetch(restUrl, {
-                            headers: {
-                                'apikey': SUPABASE_KEY,
-                                'Authorization': `Bearer ${SUPABASE_KEY}`
+                    } catch(eA) {}
+
+                    // Intento B: 'Colaboradores' (con mayúscula)
+                    if (!data || data.length === 0) {
+                        try {
+                            let res2 = await supabaseClient.from('Colaboradores').select('*');
+                            if (res2.data && res2.data.length > 0) {
+                                data = res2.data;
                             }
-                        });
+                        } catch(eB) {}
                     }
-                    if (resp.ok) {
-                        data = await resp.json();
+                }
+
+                // 2. Fallback con REST API directo (probando ambas variantes)
+                if (!data || data.length === 0) {
+                    for (let tbl of ['colaboradores', 'Colaboradores']) {
+                        try {
+                            let restUrl = `${SUPABASE_URL}/rest/v1/${tbl}?select=*`;
+                            let resp = await fetch(restUrl, {
+                                headers: {
+                                    'apikey': SUPABASE_KEY,
+                                    'Authorization': `Bearer ${SUPABASE_KEY}`
+                                }
+                            });
+                            if (resp.ok) {
+                                let resJson = await resp.json();
+                                if (Array.isArray(resJson) && resJson.length > 0) {
+                                    data = resJson;
+                                    break;
+                                }
+                            }
+                        } catch (eRest) {}
                     }
                 }
 
                 if (!data || data.length === 0) {
-                    throw new Error("No se obtuvieron registros de la tabla colaboradores en Supabase. Verifica que tenga filas.");
+                    throw new Error("Supabase devolvió 0 filas. Esto se debe a que la seguridad RLS está activada por defecto. En Supabase: ve a Table Editor > Colaboradores > Desactivar RLS (Disable RLS) para permitir la lectura.");
                 }
 
                 // Procesar datos y renderizar
