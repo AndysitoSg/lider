@@ -114,7 +114,46 @@
             transition: all 0.2s;
         }
         
-        /* BADGE ESTADO DE MIGRACIÓN (AL COSTADO DE CONECTAR GOOGLE SHEETS) */
+        
+        /* INDICADOR PULSANTE EN VIVO (SUBTLE LIVE INDICATOR) */
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(22, 101, 52, 0.2);
+            color: #4ade80;
+            border: 1px solid rgba(22, 163, 74, 0.4);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11.5px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #22c55e;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+            animation: pulse-green 2s infinite;
+        }
+        @keyframes pulse-green {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+            }
+        }
+
+        /* BADGE ESTADO DE MIGRACIÓN */
         .migration-status-badge {
             padding: 7px 13px;
             border-radius: 8px;
@@ -798,41 +837,39 @@
     <script>
         
         
-        // ==========================================
-        // CONEXIÓN OFICIAL SUPABASE EN TIEMPO REAL
-        // ==========================================
+        // ==============================================================
+        // SINCRONIZACIÓN SUTIL Y AUTOMÁTICA CADA 5 SEGUNDOS (SUPABASE)
+        // ==============================================================
         const SUPABASE_URL = 'https://wecqemjngqbtyaopifsg.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_3Sp2qOQmJ62tUx1UKINdqw_2VocLQ2j';
         let supabaseClient = null;
+        let lastDataHash = "";
+        let isFetching = false;
 
         try {
             if (window.supabase && window.supabase.createClient) {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             }
         } catch (e) {
-            console.warn("Inicialización de cliente Supabase:", e);
+            console.warn("Supabase SDK:", e);
         }
 
-        // Hash rápido para detectar si realmente cambiaron los datos y evitar parpadeos
-        let lastDataHash = "";
+        // Función de normalización insensible a tildes y espacios
+        function normalizeKey(str) {
+            if (!str) return '';
+            return str.toString()
+                      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                      .trim().toUpperCase();
+        }
 
-        async function fetchFromSupabase(isAutoSync = false) {
-            const statusBadge = document.getElementById('migrationStatusBadge');
-            
-            // Si es manual (clic en botón), mostrar spinner de carga
-            if (!isAutoSync) {
-                if (statusBadge) {
-                    statusBadge.className = 'migration-status-badge status-loading';
-                    statusBadge.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ACTUALIZANDO...';
-                }
-                document.getElementById('loading').style.display = 'inline';
-                document.getElementById('loading').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando con Supabase...';
-            }
+        async function fetchFromSupabaseSilent() {
+            if (isFetching) return; // Evitar llamadas superpuestas
+            isFetching = true;
 
             try {
                 let data = null;
 
-                // 1. Intentar con REST API directo (milisegundos, sin intermediarios)
+                // Consulta directa REST API con no-store (sin intermediarios, tarda ~50ms)
                 for (let tbl of ['Colaboradores', 'colaboradores']) {
                     try {
                         let restUrl = `${SUPABASE_URL}/rest/v1/${tbl}?select=*&order=ITEM.asc`;
@@ -853,7 +890,7 @@
                     } catch (eRest) {}
                 }
 
-                // 2. Si falla REST, intentar con SDK oficial de Supabase
+                // Fallback con SDK si REST no retornó filas
                 if (!data && supabaseClient) {
                     try {
                         let res = await supabaseClient.from('Colaboradores').select('*').order('ITEM', { ascending: true });
@@ -866,126 +903,47 @@
                     } catch (eSdk) {}
                 }
 
-                if (!data || data.length === 0) {
-                    throw new Error("No se obtuvieron registros de la tabla Colaboradores en Supabase.");
-                }
+                if (data && data.length > 0) {
+                    // Detección sutil de cambios: solo re-renderizar si un dato cambió
+                    const currentHash = JSON.stringify(data);
+                    if (currentHash !== lastDataHash) {
+                        lastDataHash = currentHash;
+                        processRawDataRobust(data);
+                        console.log("⚡ [Liderman Live] Datos actualizados sutilmente:", data.length, "registros.");
+                    }
 
-                // Comprobar si los datos cambiaron para no redibujar innecesariamente
-                const newHash = JSON.stringify(data);
-                const hasChanged = (newHash !== lastDataHash);
-
-                if (hasChanged) {
-                    lastDataHash = newHash;
-                    processRawGoogleData(data);
-                }
-
-                const now = new Date();
-                const horaStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                document.getElementById('lastUpdatedTag').innerHTML = `<i class="fa-solid fa-bolt" style="color:#10b981;"></i> SUPABASE EN VIVO: ${dbFull.length} REGISTROS (${horaStr})`;
-
-                if (statusBadge) {
-                    statusBadge.className = 'migration-status-badge status-success';
-                    statusBadge.innerHTML = `<i class="fa-solid fa-bolt"></i> SUPABASE EN TIEMPO REAL (${horaStr})`;
-                    statusBadge.title = `Conectado y sincronizado automáticamente a las ${horaStr}.`;
-                    statusBadge.onclick = () => fetchFromSupabase(false);
+                    // Actualizar hora sutilmente en el encabezado
+                    const now = new Date();
+                    const horaStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    const statusText = document.getElementById('liveStatusText');
+                    if (statusText) statusText.textContent = `EN VIVO (${horaStr})`;
+                    const tag = document.getElementById('lastUpdatedTag');
+                    if (tag) tag.innerHTML = `<i class="fa-solid fa-bolt" style="color:#10b981;"></i> ${dbFull.length} REGISTROS (${horaStr})`;
                 }
 
             } catch (err) {
-                console.error("Error en sincronización automática Supabase:", err);
-                if (!isAutoSync && statusBadge) {
-                    statusBadge.className = 'migration-status-badge status-error';
-                    statusBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ERROR SUPABASE`;
-                    statusBadge.title = `Error: ${err.message || 'No se pudo conectar'}. Haz clic para reintentar.`;
-                    statusBadge.onclick = () => fetchFromSupabase(false);
-                }
+                console.warn("Consulta sutil en segundo plano:", err);
             } finally {
-                if (!isAutoSync) {
-                    document.getElementById('loading').style.display = 'none';
-                }
+                isFetching = false;
             }
         }
 
-        // CANAL EN TIEMPO REAL WEBSOCKET + EVENTOS DE ESQUEMA PÚBLICO
-        function setupSupabaseRealtime() {
-            if (!supabaseClient) return;
-            try {
-                // Escuchar cualquier cambio en el esquema público
-                supabaseClient
-                    .channel('canal-tiempo-real-liderman')
-                    .on('postgres_changes', { event: '*', schema: 'public' }, (payload) => {
-                        console.log("⚡ Cambio detectado automáticamente en Supabase:", payload);
-                        fetchFromSupabase(true);
-                    })
-                    .subscribe((status) => {
-                        console.log("Estado de canal en tiempo real:", status);
-                    });
-            } catch(e) {
-                console.warn("Realtime listener error:", e);
-            }
-        }
-
-        // --- INTEGRACIÓN GOOGLE SHEETS ULTRA-ROBUSTA (CON SOPORTE NATIVO Y FALLBACK) ---
-        const DEFAULT_USER_SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTcyPXTFAoPGvRGVe0648wz2A6caeYUwLq7mogJnEokUAnyACY6Fy92L1dhqb0gbgQ_bmVlp1If6U8U/pub?gid=1202518638&single=true&output=csv';
-        let autoSyncTimer = null;
-
-        function openSheetsModal() {
-            const savedUrl = localStorage.getItem('liderman_sheets_url') || DEFAULT_USER_SHEETS_URL;
-            document.getElementById('sheetsUrlInput').value = savedUrl;
-            document.getElementById('sheetsModal').style.display = 'block';
-        }
-
-        function closeSheetsModal() {
-            document.getElementById('sheetsModal').style.display = 'none';
-        }
-
-        function extractSheetId(inputStr) {
-            if (!inputStr) return null;
-            inputStr = inputStr.trim();
-            if (inputStr.includes('/d/e/2PACX-')) {
-                return inputStr;
-            }
-            const match = inputStr.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
-            if (match && match[1]) return match[1];
-            if (!inputStr.includes('/') && inputStr.length > 20) return inputStr;
-            return null;
-        }
-
-        async function saveAndSyncSheets() {
-            const inputVal = document.getElementById('sheetsUrlInput').value.trim() || DEFAULT_USER_SHEETS_URL;
-            const sheetId = extractSheetId(inputVal);
-            if (!sheetId) {
-                alert("Por favor ingresa un enlace válido de Google Sheets.");
-                return;
-            }
-            localStorage.setItem('liderman_sheets_url', inputVal);
-            localStorage.setItem('liderman_sheets_id', sheetId);
-            closeSheetsModal();
-            await syncFromGoogleSheets(sheetId);
-        }
-
-        function onSyncError(err) {
-            console.error("Error sincronizando Google Sheets:", err);
-            document.getElementById('loading').style.display = 'none';
-            const statusBadge = document.getElementById('migrationStatusBadge');
-            if (statusBadge) {
-                statusBadge.className = 'migration-status-badge status-error';
-                statusBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ERROR DE MIGRACIÓN`;
-                statusBadge.title = `Error: ${err.message || 'Fallo de conexión'}. Haz clic para ver solución.`;
-                statusBadge.onclick = () => alert(`⚠️ Error de migración:\n${err.message}\n\nVerifica que la hoja publicada esté accesible y contenga datos válidos.`);
-            }
-        }
-
-        function processRawGoogleData(rawData) {
+        // Procesador ultra-robusto que reconoce columnas con o sin tildes
+        function processRawDataRobust(rawData) {
             const parsed = [];
             rawData.forEach((row, index) => {
                 let cleanRow = {};
-                for (let k in row) cleanRow[k.trim().toUpperCase()] = row[k];
+                for (let k in row) {
+                    cleanRow[normalizeKey(k)] = row[k];
+                }
 
                 let zona = (cleanRow['ZONA'] || '').toString().trim().toUpperCase();
-                let nombre = (cleanRow['APELLIDOS Y NOMBRES'] || cleanRow['NOMBRE'] || '').toString().trim();
-                if (!nombre && !cleanRow['N° DOC']) return;
+                let nombre = (cleanRow['APELLIDOS Y NOMBRES'] || cleanRow['NOMBRE'] || cleanRow['COLABORADOR'] || '').toString().trim();
+                let docNum = (cleanRow['N° DOC'] || cleanRow['NO DOC'] || cleanRow['NUMERO'] || cleanRow['DNI'] || '').toString().trim();
 
-                let avanceVal = cleanRow['AVANCE(%)'] || cleanRow['AVANCE'] || cleanRow['% AVANCE'] || '';
+                if (!nombre && !docNum) return;
+
+                let avanceVal = cleanRow['AVANCE(%)'] || cleanRow['AVANCE (%)'] || cleanRow['AVANCE'] || cleanRow['% AVANCE'] || '';
                 let avanceNum = 0.0;
                 let avanceStr = avanceVal.toString().trim();
                 if (typeof avanceVal === 'number') {
@@ -997,12 +955,12 @@
                 }
 
                 parsed.push({
-                    'ITEM': cleanRow['ITEM'] || (index + 1),
+                    'ITEM': cleanRow['ITEM'] || cleanRow['ARTICULO'] || (index + 1),
                     'FECHA': cleanRow['FECHA'] ? cleanRow['FECHA'].toString().split('T')[0] : '',
                     'ZONA': zona || 'ZONA NO DEFINIDA',
                     'DISTRIBUCION': (cleanRow['DISTRIBUCION'] || '').toString().trim().toUpperCase(),
-                    'TP_DOC': (cleanRow['TP. DE DOC'] || cleanRow['T. DE DOCUMENTO'] || cleanRow['TIPO DOC'] || 'DNI').toString().trim().toUpperCase(),
-                    'NUM_DOC': (cleanRow['N° DOC'] || cleanRow['N° DOCUMENTO'] || cleanRow['NUMERO'] || '').toString().trim(),
+                    'TP_DOC': (cleanRow['TP. DE DOC'] || cleanRow['TP DE DOC'] || cleanRow['T. DE DOCUMENTO'] || 'DNI').toString().trim().toUpperCase(),
+                    'NUM_DOC': docNum,
                     'NOMBRE': nombre,
                     'ALTA': (cleanRow['ALTA'] || cleanRow['ESTADO ALTA'] || 'POR VER').toString().trim().toUpperCase(),
                     'ASISTENCIA': (cleanRow['ASISTENCIA'] || 'POR REVISAR').toString().trim().toUpperCase(),
@@ -1019,24 +977,9 @@
 
             if (parsed.length > 0) {
                 dbFull = parsed;
-                const now = new Date();
-                const horaStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                document.getElementById('lastUpdatedTag').innerHTML = `<i class="fa-solid fa-cloud-check" style="color:#10b981;"></i> NUBE ACTIVA: ${dbFull.length} REGISTROS (${horaStr})`;
-                
-                const statusBadge = document.getElementById('migrationStatusBadge');
-                if (statusBadge) {
-                    statusBadge.className = 'migration-status-badge status-success';
-                    statusBadge.innerHTML = `<i class="fa-solid fa-circle-check"></i> MIGRACIÓN EXITOSA (${horaStr})`;
-                    statusBadge.title = `Sincronización exitosa: ${dbFull.length} registros cargados a las ${horaStr}.`;
-                    statusBadge.onclick = null;
-                }
-
                 updateContextualFilters(currentTabId);
                 renderDashboard();
-            } else {
-                throw new Error("No se encontraron registros con nombres o DNI válidos en la hoja.");
             }
-            document.getElementById('loading').style.display = 'none';
         }
 
         // Helper para descargar texto CSV con timeout estricto de 5 segundos
@@ -1123,7 +1066,7 @@
                 const workbook = XLSX.read(csvText, { type: 'string' });
                 const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
                 const rawData = XLSX.utils.sheet_to_json(firstSheet, { defval: "" });
-                processRawGoogleData(rawData);
+                processRawDataRobust(rawData);
             } catch (err) {
                 onSyncError(err);
             } finally {
@@ -1132,28 +1075,20 @@
             }
         }
 
-        window.addEventListener('load', () => {
-            // 1. Carga inicial inmediata
-            fetchFromSupabase(false);
-            
-            // 2. Activar canal de tiempo real por WebSocket
-            setupSupabaseRealtime();
+        // INICIO AUTOMÁTICO INMEDIATO: Cero clics, 100% automático y sutil
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Consulta inmediata silenciosa
+            fetchFromSupabaseSilent();
 
-            // 3. AUTO-ACTUALIZACIÓN SILENCIOSA EN SEGUNDO PLANO CADA 4 SEGUNDOS
-            // Esto garantiza que CUALQUIER cambio en Supabase se refleje automáticamente
-            // en máximo 4 segundos, sin que el usuario tenga que dar ni un solo clic.
-            setInterval(() => {
-                fetchFromSupabase(true);
-            }, 4000);
+            // 2. Intervalo sutil cada 5 segundos (5000 ms)
+            // Consulta en segundo plano sin parpadear la pantalla ni molestar a los reclutadores
+            setInterval(fetchFromSupabaseSilent, 5000);
 
-            // 4. ACTUALIZACIÓN AL VOLVER A LA PESTAÑA (FOCUS / VISIBILITY)
-            // Tan pronto vuelves a la ventana del dashboard tras editar en Supabase, se actualiza al milisegundo
-            window.addEventListener('focus', () => {
-                fetchFromSupabase(true);
-            });
+            // 3. Sincronización instantánea al cambiar o volver a la ventana
+            window.addEventListener('focus', fetchFromSupabaseSilent);
             document.addEventListener('visibilitychange', () => {
                 if (document.visibilityState === 'visible') {
-                    fetchFromSupabase(true);
+                    fetchFromSupabaseSilent();
                 }
             });
         });
