@@ -7,6 +7,7 @@
     <!-- Librerías de Excel y Gráficos -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Tipografía Inter e Íconos FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -636,8 +637,8 @@
         </div>
         <div class="header-actions">
                         <!-- BOTÓN CONECTAR GOOGLE SHEETS (OPCIÓN 1) -->
-            <button class="btn-cloud-sync" onclick="openSheetsModal()">
-                <i class="fa-solid fa-cloud-arrow-down"></i> Conectar Google Sheets
+            <button class="btn-cloud-sync" onclick="fetchFromSupabase()" style="background:#166534; border-color:#15803d;">
+                <i class="fa-solid fa-bolt"></i> Sincronizar Supabase
             </button>
             <!-- BADGE ESTADO DE MIGRACIÓN AL COSTADO DEL BOTÓN -->
             <span id="migrationStatusBadge" class="migration-status-badge status-idle" title="Estado de la conexión a Google Sheets">
@@ -797,6 +798,118 @@
     <script>
         
         
+        // ==========================================
+        // CONEXIÓN OFICIAL SUPABASE EN TIEMPO REAL
+        // ==========================================
+        const SUPABASE_URL = 'https://wecqemjngqbtyaopifsg.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_3Sp2qOQmJ62tUx1UKINdqw_2VocLQ2j';
+        let supabaseClient = null;
+
+        try {
+            if (window.supabase && window.supabase.createClient) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            }
+        } catch (e) {
+            console.warn("Inicialización de cliente Supabase:", e);
+        }
+
+        async function fetchFromSupabase() {
+            const statusBadge = document.getElementById('migrationStatusBadge');
+            if (statusBadge) {
+                statusBadge.className = 'migration-status-badge status-loading';
+                statusBadge.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> CONECTANDO A SUPABASE...';
+            }
+            document.getElementById('loading').style.display = 'inline';
+            document.getElementById('loading').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Consultando base de datos Supabase...';
+
+            try {
+                let data = null;
+
+                // 1. Intentar con SDK oficial de Supabase
+                if (supabaseClient) {
+                    let res = await supabaseClient.from('colaboradores').select('*').order('ITEM', { ascending: true });
+                    if (res.error && (res.error.code === '42P01' || res.error.message.includes('not found'))) {
+                        res = await supabaseClient.from('Colaboradores').select('*').order('ITEM', { ascending: true });
+                    }
+                    if (!res.error && res.data && res.data.length > 0) {
+                        data = res.data;
+                    }
+                }
+
+                // 2. Fallback con REST API directo (Ultra rápido)
+                if (!data || data.length === 0) {
+                    let restUrl = `${SUPABASE_URL}/rest/v1/colaboradores?select=*&order=ITEM.asc`;
+                    let resp = await fetch(restUrl, {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    });
+                    if (!resp.ok) {
+                        restUrl = `${SUPABASE_URL}/rest/v1/Colaboradores?select=*&order=ITEM.asc`;
+                        resp = await fetch(restUrl, {
+                            headers: {
+                                'apikey': SUPABASE_KEY,
+                                'Authorization': `Bearer ${SUPABASE_KEY}`
+                            }
+                        });
+                    }
+                    if (resp.ok) {
+                        data = await resp.json();
+                    }
+                }
+
+                if (!data || data.length === 0) {
+                    throw new Error("No se obtuvieron registros de la tabla colaboradores en Supabase. Verifica que tenga filas.");
+                }
+
+                // Procesar datos y renderizar
+                processRawGoogleData(data);
+
+                const now = new Date();
+                const horaStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                document.getElementById('lastUpdatedTag').innerHTML = `<i class="fa-solid fa-bolt" style="color:#10b981;"></i> SUPABASE EN VIVO: ${dbFull.length} REGISTROS (${horaStr})`;
+
+                if (statusBadge) {
+                    statusBadge.className = 'migration-status-badge status-success';
+                    statusBadge.innerHTML = `<i class="fa-solid fa-bolt"></i> SUPABASE EN TIEMPO REAL (${horaStr})`;
+                    statusBadge.title = `Conectado a Supabase: ${dbFull.length} colaboradores sincronizados en tiempo real.`;
+                    statusBadge.onclick = null;
+                }
+
+            } catch (err) {
+                console.error("Error consultando Supabase:", err);
+                document.getElementById('loading').style.display = 'none';
+                if (statusBadge) {
+                    statusBadge.className = 'migration-status-badge status-error';
+                    statusBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ERROR SUPABASE`;
+                    statusBadge.title = `Error: ${err.message || 'No se pudo conectar'}. Haz clic para ver detalles.`;
+                    statusBadge.onclick = () => alert("⚠️ Error de conexión a Supabase:\n" + (err.message || 'Verifica la conexión a internet y que la tabla colaboradores exista'));
+                }
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        function setupSupabaseRealtime() {
+            if (!supabaseClient) return;
+            try {
+                supabaseClient
+                    .channel('realtime-colaboradores')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'colaboradores' }, (payload) => {
+                        console.log("⚡ Cambio detectado en Supabase en tiempo real:", payload);
+                        fetchFromSupabase();
+                    })
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'Colaboradores' }, (payload) => {
+                        console.log("⚡ Cambio detectado en Supabase en tiempo real:", payload);
+                        fetchFromSupabase();
+                    })
+                    .subscribe();
+            } catch(e) {
+                console.warn("Realtime listener error:", e);
+            }
+        }
+
         // --- INTEGRACIÓN GOOGLE SHEETS ULTRA-ROBUSTA (CON SOPORTE NATIVO Y FALLBACK) ---
         const DEFAULT_USER_SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTcyPXTFAoPGvRGVe0648wz2A6caeYUwLq7mogJnEokUAnyACY6Fy92L1dhqb0gbgQ_bmVlp1If6U8U/pub?gid=1202518638&single=true&output=csv';
         let autoSyncTimer = null;
@@ -1006,15 +1119,9 @@
         }
 
         window.addEventListener('load', () => {
-            const savedId = localStorage.getItem('liderman_sheets_id') || DEFAULT_USER_SHEETS_URL;
-            if (savedId) {
-                syncFromGoogleSheets(savedId);
-                // Auto-sincronizar cada 2 minutos (120,000 ms)
-                if (autoSyncTimer) clearInterval(autoSyncTimer);
-                autoSyncTimer = setInterval(() => {
-                    syncFromGoogleSheets(savedId);
-                }, 120000);
-            }
+            // Conectar de inmediato a Supabase en tiempo real
+            fetchFromSupabase();
+            setupSupabaseRealtime();
         });
 
         // BASE DE DATOS PRECARGADA (57 REGISTROS)
