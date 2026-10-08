@@ -917,7 +917,7 @@
             const controller = new AbortController();
             const timer = setTimeout(() => controller.abort(), timeoutMs);
             try {
-                const response = await fetch(url, { signal: controller.signal, cache: 'no-cache' });
+                const response = await fetch(url, { signal: controller.signal, cache: 'no-store' });
                 clearTimeout(timer);
                 return response;
             } catch (err) {
@@ -931,6 +931,9 @@
             if (!cleanUrl.includes('output=csv')) {
                 cleanUrl += (cleanUrl.includes('?') ? '&' : '?') + 'output=csv';
             }
+            // Anti-caché estricto: evita que el navegador reutilice datos viejos
+            const timestamp = Date.now();
+            cleanUrl += (cleanUrl.includes('?') ? '&' : '?') + '_t=' + timestamp;
 
             // Intento 1: Fetch directo con timeout de 5 segundos
             try {
