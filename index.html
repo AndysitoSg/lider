@@ -635,6 +635,200 @@
         .status-badge { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; white-space: nowrap; display: inline-block; letter-spacing: 0.5px; }
 
         /* ESTILOS DE IMPRESIÓN / PDF EJECUTIVO (OPCIÓN 5) */
+        /* ==============================================================
+           DISEÑO ADAPTABLE A CUALQUIER DISPOSITIVO (RESPONSIVE WEB DESIGN)
+           Soporte fluido para PC, Laptops, Tablets y Celulares (iOS / Android)
+           ============================================================== */
+        
+        /* 1. TABLETS Y LAPTOPS PEQUEÑAS (Pantallas <= 1024px) */
+        @media (max-width: 1024px) {
+            .header { padding: 14px 24px; }
+            .controls { padding: 14px 24px; gap: 12px; }
+            .tabs-container { padding: 0 24px; gap: 16px; }
+            .container { padding: 20px 24px; }
+            .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+            .charts-row { grid-template-columns: 1fr; }
+            .chart-container { height: 320px; }
+            .general-zones-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        /* 2. CELULARES Y MÓVILES (Pantallas <= 768px) */
+        @media (max-width: 768px) {
+            /* Header compacto en móvil */
+            .header {
+                padding: 12px 16px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .header-brand { gap: 12px; }
+            .header-logo-icon { width: 36px; height: 36px; font-size: 18px; border-radius: 8px; }
+            .header-title-box h1 { font-size: 15px; letter-spacing: -0.2px; }
+            .header-title-box .header-subtitle { font-size: 10.5px; }
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .live-indicator { font-size: 10.5px; padding: 4px 10px; }
+            .btn-print-top { padding: 5px 10px; font-size: 11px; }
+            .header-badge-status { font-size: 10.5px; padding: 4px 10px; }
+
+            /* Barra de controles táctil */
+            .controls {
+                padding: 12px 16px;
+                gap: 10px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+            .control-group { width: 100%; min-width: 0; }
+            .control-group:first-child, /* Archivo */
+            .control-group:nth-child(2), /* Búsqueda rápida */
+            .btn-reset {
+                grid-column: span 2;
+            }
+            input[type="file"], select, input[type="text"] {
+                width: 100% !important;
+                min-width: 0 !important;
+                height: 40px;
+                font-size: 12px;
+            }
+            .global-search-input {
+                min-width: 100% !important;
+            }
+            .btn-reset {
+                width: 100%;
+                height: 38px;
+                justify-content: center;
+                display: flex;
+                align-items: center;
+            }
+
+            /* Pestañas táctiles con scroll suave horizontal */
+            .tabs-container {
+                padding: 0 16px;
+                gap: 14px;
+                -webkit-overflow-scrolling: touch;
+            }
+            .tab-btn {
+                padding: 14px 4px;
+                font-size: 11.5px;
+                gap: 6px;
+            }
+            .tab-pill { font-size: 10px; padding: 1px 6px; }
+
+            /* Contenedor principal */
+            .container { padding: 16px 14px; }
+            .section-header {
+                font-size: 15px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+                margin-bottom: 16px;
+            }
+            .badge-group { width: 100%; gap: 6px; }
+            .badge { font-size: 10.5px; padding: 4px 10px; }
+
+            /* Cuadrícula de KPIs perfecta en celular: 2 columnas */
+            .kpi-grid {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 10px !important;
+                margin-bottom: 18px !important;
+            }
+            .kpi-card {
+                min-width: 0 !important;
+                padding: 14px 12px !important;
+                border-radius: 10px !important;
+            }
+            .kpi-icon {
+                top: 12px !important;
+                right: 10px !important;
+                font-size: 18px !important;
+            }
+            .kpi-title {
+                font-size: 9.5px !important;
+                margin-bottom: 4px !important;
+                letter-spacing: 0.3px !important;
+            }
+            .kpi-value {
+                font-size: 20px !important;
+                letter-spacing: -0.5px !important;
+            }
+            .kpi-subtext {
+                font-size: 9.5px !important;
+                margin-top: 6px !important;
+            }
+
+            /* Tarjetas de Zonas en pestaña General apiladas */
+            .general-zones-grid {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+            }
+            .general-zone-box {
+                padding: 15px !important;
+                border-radius: 10px !important;
+            }
+            .general-zone-name { font-size: 14px !important; }
+
+            /* Gráficos apilados a 1 columna */
+            .charts-row {
+                grid-template-columns: 1fr !important;
+                gap: 14px !important;
+                margin-bottom: 14px !important;
+            }
+            .chart-box {
+                padding: 14px !important;
+                border-radius: 10px !important;
+            }
+            .chart-container {
+                height: 290px !important;
+            }
+
+            /* Tabla Comparativa con scroll suave */
+            .comparison-table-wrapper {
+                padding: 14px !important;
+                border-radius: 10px !important;
+            }
+            .comparison-table th, .comparison-table td {
+                padding: 9px 10px !important;
+                font-size: 11px !important;
+            }
+
+            /* Modal en celular: casi pantalla completa */
+            .modal-content {
+                width: 96% !important;
+                max-height: 94vh !important;
+                margin: 3% auto !important;
+                border-radius: 12px !important;
+            }
+            .modal-header { padding: 14px 18px !important; }
+            .modal-title { font-size: 13px !important; }
+            .modal-toolbar {
+                padding: 10px 14px !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 8px !important;
+            }
+            .modal-toolbar input { min-width: 100% !important; }
+            .btn-export { width: 100%; justify-content: center; }
+            .modal-body { padding: 12px 14px !important; }
+            .data-table th, .data-table td {
+                padding: 8px 10px !important;
+                font-size: 11px !important;
+            }
+        }
+
+        /* 3. CELULARES PEQUEÑOS (Pantallas <= 420px) */
+        @media (max-width: 420px) {
+            .header-title-box h1 { font-size: 13.5px; }
+            .kpi-value { font-size: 18px !important; }
+            .kpi-title { font-size: 8.5px !important; }
+            .controls { grid-template-columns: 1fr; }
+            .control-group, .btn-reset { grid-column: span 1; }
+        }
+
         @media print {
             body { background: #ffffff !important; color: #000000 !important; }
             .controls, .tabs-container, .modal, .btn-print-top, input, select, .btn-reset { display: none !important; }
