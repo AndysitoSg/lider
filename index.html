@@ -813,67 +813,71 @@
             console.warn("Inicialización de cliente Supabase:", e);
         }
 
-        async function fetchFromSupabase() {
+        // Hash rápido para detectar si realmente cambiaron los datos y evitar parpadeos
+        let lastDataHash = "";
+
+        async function fetchFromSupabase(isAutoSync = false) {
             const statusBadge = document.getElementById('migrationStatusBadge');
-            if (statusBadge) {
-                statusBadge.className = 'migration-status-badge status-loading';
-                statusBadge.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> CONECTANDO A SUPABASE...';
+            
+            // Si es manual (clic en botón), mostrar spinner de carga
+            if (!isAutoSync) {
+                if (statusBadge) {
+                    statusBadge.className = 'migration-status-badge status-loading';
+                    statusBadge.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ACTUALIZANDO...';
+                }
+                document.getElementById('loading').style.display = 'inline';
+                document.getElementById('loading').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando con Supabase...';
             }
-            document.getElementById('loading').style.display = 'inline';
-            document.getElementById('loading').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Consultando base de datos Supabase...';
 
             try {
                 let data = null;
 
-                // 1. Intentar con SDK oficial de Supabase (probando tanto 'colaboradores' como 'Colaboradores')
-                if (supabaseClient) {
-                    // Intento A: 'colaboradores'
+                // 1. Intentar con REST API directo (milisegundos, sin intermediarios)
+                for (let tbl of ['Colaboradores', 'colaboradores']) {
                     try {
-                        let res = await supabaseClient.from('colaboradores').select('*');
-                        if (res.data && res.data.length > 0) {
+                        let restUrl = `${SUPABASE_URL}/rest/v1/${tbl}?select=*&order=ITEM.asc`;
+                        let resp = await fetch(restUrl, {
+                            cache: 'no-store',
+                            headers: {
+                                'apikey': SUPABASE_KEY,
+                                'Authorization': `Bearer ${SUPABASE_KEY}`
+                            }
+                        });
+                        if (resp.ok) {
+                            let resJson = await resp.json();
+                            if (Array.isArray(resJson) && resJson.length > 0) {
+                                data = resJson;
+                                break;
+                            }
+                        }
+                    } catch (eRest) {}
+                }
+
+                // 2. Si falla REST, intentar con SDK oficial de Supabase
+                if (!data && supabaseClient) {
+                    try {
+                        let res = await supabaseClient.from('Colaboradores').select('*').order('ITEM', { ascending: true });
+                        if (res.error || !res.data || res.data.length === 0) {
+                            res = await supabaseClient.from('colaboradores').select('*').order('ITEM', { ascending: true });
+                        }
+                        if (!res.error && res.data && res.data.length > 0) {
                             data = res.data;
                         }
-                    } catch(eA) {}
-
-                    // Intento B: 'Colaboradores' (con mayúscula)
-                    if (!data || data.length === 0) {
-                        try {
-                            let res2 = await supabaseClient.from('Colaboradores').select('*');
-                            if (res2.data && res2.data.length > 0) {
-                                data = res2.data;
-                            }
-                        } catch(eB) {}
-                    }
-                }
-
-                // 2. Fallback con REST API directo (probando ambas variantes)
-                if (!data || data.length === 0) {
-                    for (let tbl of ['colaboradores', 'Colaboradores']) {
-                        try {
-                            let restUrl = `${SUPABASE_URL}/rest/v1/${tbl}?select=*`;
-                            let resp = await fetch(restUrl, {
-                                headers: {
-                                    'apikey': SUPABASE_KEY,
-                                    'Authorization': `Bearer ${SUPABASE_KEY}`
-                                }
-                            });
-                            if (resp.ok) {
-                                let resJson = await resp.json();
-                                if (Array.isArray(resJson) && resJson.length > 0) {
-                                    data = resJson;
-                                    break;
-                                }
-                            }
-                        } catch (eRest) {}
-                    }
+                    } catch (eSdk) {}
                 }
 
                 if (!data || data.length === 0) {
-                    throw new Error("Supabase devolvió 0 filas. Esto se debe a que la seguridad RLS está activada por defecto. En Supabase: ve a Table Editor > Colaboradores > Desactivar RLS (Disable RLS) para permitir la lectura.");
+                    throw new Error("No se obtuvieron registros de la tabla Colaboradores en Supabase.");
                 }
 
-                // Procesar datos y renderizar
-                processRawGoogleData(data);
+                // Comprobar si los datos cambiaron para no redibujar innecesariamente
+                const newHash = JSON.stringify(data);
+                const hasChanged = (newHash !== lastDataHash);
+
+                if (hasChanged) {
+                    lastDataHash = newHash;
+                    processRawGoogleData(data);
+                }
 
                 const now = new Date();
                 const horaStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -882,38 +886,39 @@
                 if (statusBadge) {
                     statusBadge.className = 'migration-status-badge status-success';
                     statusBadge.innerHTML = `<i class="fa-solid fa-bolt"></i> SUPABASE EN TIEMPO REAL (${horaStr})`;
-                    statusBadge.title = `Conectado a Supabase: ${dbFull.length} colaboradores sincronizados en tiempo real.`;
-                    statusBadge.onclick = null;
+                    statusBadge.title = `Conectado y sincronizado automáticamente a las ${horaStr}.`;
+                    statusBadge.onclick = () => fetchFromSupabase(false);
                 }
 
             } catch (err) {
-                console.error("Error consultando Supabase:", err);
-                document.getElementById('loading').style.display = 'none';
-                if (statusBadge) {
+                console.error("Error en sincronización automática Supabase:", err);
+                if (!isAutoSync && statusBadge) {
                     statusBadge.className = 'migration-status-badge status-error';
                     statusBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ERROR SUPABASE`;
-                    statusBadge.title = `Error: ${err.message || 'No se pudo conectar'}. Haz clic para ver detalles.`;
-                    statusBadge.onclick = () => alert("⚠️ Error de conexión a Supabase:\n" + (err.message || 'Verifica la conexión a internet y que la tabla colaboradores exista'));
+                    statusBadge.title = `Error: ${err.message || 'No se pudo conectar'}. Haz clic para reintentar.`;
+                    statusBadge.onclick = () => fetchFromSupabase(false);
                 }
             } finally {
-                document.getElementById('loading').style.display = 'none';
+                if (!isAutoSync) {
+                    document.getElementById('loading').style.display = 'none';
+                }
             }
         }
 
+        // CANAL EN TIEMPO REAL WEBSOCKET + EVENTOS DE ESQUEMA PÚBLICO
         function setupSupabaseRealtime() {
             if (!supabaseClient) return;
             try {
+                // Escuchar cualquier cambio en el esquema público
                 supabaseClient
-                    .channel('realtime-colaboradores')
-                    .on('postgres_changes', { event: '*', schema: 'public', table: 'colaboradores' }, (payload) => {
-                        console.log("⚡ Cambio detectado en Supabase en tiempo real:", payload);
-                        fetchFromSupabase();
+                    .channel('canal-tiempo-real-liderman')
+                    .on('postgres_changes', { event: '*', schema: 'public' }, (payload) => {
+                        console.log("⚡ Cambio detectado automáticamente en Supabase:", payload);
+                        fetchFromSupabase(true);
                     })
-                    .on('postgres_changes', { event: '*', schema: 'public', table: 'Colaboradores' }, (payload) => {
-                        console.log("⚡ Cambio detectado en Supabase en tiempo real:", payload);
-                        fetchFromSupabase();
-                    })
-                    .subscribe();
+                    .subscribe((status) => {
+                        console.log("Estado de canal en tiempo real:", status);
+                    });
             } catch(e) {
                 console.warn("Realtime listener error:", e);
             }
@@ -1128,9 +1133,29 @@
         }
 
         window.addEventListener('load', () => {
-            // Conectar de inmediato a Supabase en tiempo real
-            fetchFromSupabase();
+            // 1. Carga inicial inmediata
+            fetchFromSupabase(false);
+            
+            // 2. Activar canal de tiempo real por WebSocket
             setupSupabaseRealtime();
+
+            // 3. AUTO-ACTUALIZACIÓN SILENCIOSA EN SEGUNDO PLANO CADA 4 SEGUNDOS
+            // Esto garantiza que CUALQUIER cambio en Supabase se refleje automáticamente
+            // en máximo 4 segundos, sin que el usuario tenga que dar ni un solo clic.
+            setInterval(() => {
+                fetchFromSupabase(true);
+            }, 4000);
+
+            // 4. ACTUALIZACIÓN AL VOLVER A LA PESTAÑA (FOCUS / VISIBILITY)
+            // Tan pronto vuelves a la ventana del dashboard tras editar en Supabase, se actualiza al milisegundo
+            window.addEventListener('focus', () => {
+                fetchFromSupabase(true);
+            });
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') {
+                    fetchFromSupabase(true);
+                }
+            });
         });
 
         // BASE DE DATOS PRECARGADA (57 REGISTROS)
