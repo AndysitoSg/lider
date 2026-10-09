@@ -790,10 +790,28 @@
             gap: 6px;
             transition: all 0.2s;
         }
+        /* BOTÓN CERRAR SESIÓN PROMINENTE (VISIBLE PARA TODOS LOS USUARIOS) */
+        .btn-logout {
+            background: #dc2626 !important;
+            color: #ffffff !important;
+            border: 1px solid #b91c1c !important;
+            padding: 7px 15px !important;
+            border-radius: 8px !important;
+            font-family: inherit !important;
+            font-size: 12px !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.3px !important;
+            cursor: pointer !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 7px !important;
+            transition: all 0.2s ease !important;
+            box-shadow: 0 2px 6px rgba(220, 38, 38, 0.35) !important;
+        }
         .btn-logout:hover {
-            background: #dc2626;
-            color: #ffffff;
-            border-color: #dc2626;
+            background: #b91c1c !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 10px rgba(220, 38, 38, 0.45) !important;
         }
 
         /* RESPONSIVE LOGIN EN CELULAR */
@@ -1082,45 +1100,72 @@
             </div>
         </div>
         <div class="header-actions">
-                        <!-- BOTÓN CONECTAR GOOGLE SHEETS (OPCIÓN 1) -->
-            <button class="btn-cloud-sync" onclick="fetchFromSupabase()" style="background:#166534; border-color:#15803d;">
+            <!-- INDICADOR EN VIVO SUTIL (VISIBLE PARA TODOS) -->
+            <div class="live-indicator" id="liveIndicatorBadge" title="Actualización automática activa cada 5 segundos">
+                <span class="pulse-dot"></span>
+                <span id="liveStatusText">EN VIVO</span>
+            </div>
+
+            <!-- BOTONES Y ESTADOS EXCLUSIVOS DEL ADMINISTRADOR -->
+            <button class="btn-cloud-sync admin-only" id="btnSyncSupabase" onclick="fetchFromSupabase(false)" title="Sincronizar manualmente con Supabase" style="background:#166534; border-color:#15803d;">
                 <i class="fa-solid fa-bolt"></i> Sincronizar Supabase
             </button>
-            <!-- BADGE ESTADO DE MIGRACIÓN AL COSTADO DEL BOTÓN -->
-            <span id="migrationStatusBadge" class="migration-status-badge status-idle" title="Estado de la conexión a Google Sheets">
+            <span class="migration-status-badge status-idle admin-only" id="migrationStatusBadge" title="Estado de la conexión a Supabase">
                 <i class="fa-solid fa-cloud"></i> PENDIENTE DE CONEXIÓN
             </span>
-            <!-- BOTÓN IMPRIMIR / EXPORTAR A PDF (OPCIÓN 5) -->
-            <button class="btn-print-top" onclick="window.print()">
+            <button class="btn-print-top admin-only" id="btnPrintTop" onclick="window.print()" title="Imprimir o exportar reporte a PDF">
                 <i class="fa-solid fa-print"></i> Imprimir / Guardar PDF
             </button>
-            <div class="header-badge-status" id="lastUpdatedTag">
-                <i class="fa-solid fa-database"></i> 57 REGISTROS PRECARGADOS
+            <div class="header-badge-status admin-only" id="lastUpdatedTag">
+                <i class="fa-solid fa-database"></i> 57 REGISTROS ACTIVOS
             </div>
+
+            <!-- CONTADOR DE SESIÓN (VISIBLE PARA TODOS) -->
+            <div class="session-info-badge" id="sessionTimerBadge" title="La sesión expira tras 10 minutos de inactividad">
+                <i class="fa-regular fa-clock" style="color:#38bdf8;"></i>
+                <span id="currentUserRoleTag" style="font-weight:800; color:#38bdf8; text-transform:uppercase;">ADMIN</span>
+                <span>•</span>
+                <span id="sessionCountdownText">10:00</span>
+            </div>
+
+            <!-- BOTÓN CERRAR SESIÓN (VISIBLE Y PROMINENTE PARA TODOS LOS USUARIOS) -->
+            <button class="btn-logout" id="btnLogoutTop" onclick="logoutUser(true)" title="Cerrar la sesión actual">
+                <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+            </button>
         </div>
+    </div>
     </div>
 
     <!-- CONTROLES / FILTROS GLOBALES -->
     <div class="controls">
-        <div class="control-group">
+        <!-- 1. CARGAR NUEVA BASE (SOLO VISIBLE PARA EL ADMIN) -->
+        <div class="control-group admin-only" id="control-cargar-base">
             <label><i class="fa-solid fa-file-excel"></i> 1. Cargar Nueva Base</label>
             <input type="file" id="fileInput" accept=".xlsx, .xls">
             <span id="loading"><i class="fa-solid fa-spinner fa-spin"></i> Procesando hoja LISTA GENERAL...</span>
         </div>
         
-        <!-- BÚSQUEDA RÁPIDA GLOBAL (OPCIÓN 3) -->
-        <div class="control-group">
+        <!-- 2. BÚSQUEDA RÁPIDA GLOBAL -->
+        <div class="control-group" id="control-busqueda">
             <label><i class="fa-solid fa-magnifying-glass"></i> 2. Búsqueda Rápida</label>
             <input type="text" id="globalSearchInput" class="global-search-input" placeholder="DNI, Nombres, Obs..." onkeyup="renderDashboard()">
         </div>
 
+        <!-- 3. FILTRO POR FECHA (NUEVO BOTÓN DE FECHAS SOLICITADO) -->
+        <div class="control-group" id="control-fecha">
+            <label><i class="fa-regular fa-calendar-days"></i> 3. Fecha</label>
+            <select id="fechaSelect"><option value="TODOS">TODAS LAS FECHAS</option></select>
+        </div>
+
+        <!-- 4. RECLUTADOR -->
         <div class="control-group" id="control-reclutador">
-            <label><i class="fa-solid fa-user-tie"></i> 3. Reclutador</label>
+            <label><i class="fa-solid fa-user-tie"></i> 4. Reclutador</label>
             <select id="reclutadorSelect"><option value="TODOS">TODOS</option></select>
         </div>
         
+        <!-- 5. ESTADO LEGAJO -->
         <div class="control-group" id="control-legajo">
-            <label><i class="fa-solid fa-folder-tree"></i> 4. Estado Legajo</label>
+            <label><i class="fa-solid fa-folder-tree"></i> 5. Estado Legajo</label>
             <select id="estadoLegajoSelect">
                 <option value="TODOS">TODOS</option>
                 <option value="COMPLETO">COMPLETO</option>
@@ -1129,8 +1174,9 @@
             </select>
         </div>
 
+        <!-- 6. REPOSITORIO -->
         <div class="control-group" id="control-repositorio">
-            <label><i class="fa-solid fa-cloud-arrow-up"></i> 5. Repositorio</label>
+            <label><i class="fa-solid fa-cloud-arrow-up"></i> 6. Repositorio</label>
             <select id="repositorioSelect">
                 <option value="TODOS">TODOS</option>
                 <option value="FINALIZADO">FINALIZADO</option>
@@ -1139,8 +1185,9 @@
             </select>
         </div>
 
+        <!-- 7. ESTADO FINAL -->
         <div class="control-group" id="control-final">
-            <label><i class="fa-solid fa-circle-check"></i> 6. Estado Final</label>
+            <label><i class="fa-solid fa-circle-check"></i> 7. Estado Final</label>
             <select id="estadoFinalSelect">
                 <option value="TODOS">TODOS</option>
                 <option value="APROBADO">APROBADO</option>
@@ -1148,51 +1195,52 @@
             </select>
         </div>
 
+        <!-- 8. ALTA -->
         <div class="control-group" id="control-alta">
-            <label><i class="fa-solid fa-user-check"></i> 7. Alta</label>
+            <label><i class="fa-solid fa-user-check"></i> 8. Alta</label>
             <select id="altaSelect"><option value="TODOS">TODOS</option></select>
         </div>
 
-        <!-- FILTRO DE ASISTENCIA (OPCIÓN 4) -->
+        <!-- 9. ASISTENCIA -->
         <div class="control-group" id="control-asistencia">
-            <label><i class="fa-solid fa-clipboard-user"></i> 8. Asistencia</label>
+            <label><i class="fa-solid fa-clipboard-user"></i> 9. Asistencia</label>
             <select id="asistenciaSelect"><option value="TODOS">TODOS</option></select>
         </div>
 
-        <!-- BOTÓN DE DISTRIBUCIÓN: VISIBLE SOLO EN PESTAÑA GENERAL -->
-        <div class="control-group" id="control-distribucion">
-            <label><i class="fa-solid fa-map-location-dot"></i> 9. Distribución</label>
+        <!-- 10. DISTRIBUCIÓN: VISIBLE SOLO EN PESTAÑA GENERAL PARA EL ADMIN -->
+        <div class="control-group admin-only" id="control-distribucion">
+            <label><i class="fa-solid fa-map-location-dot"></i> 10. Distribución</label>
             <select id="distribucionSelect"><option value="TODOS">TODOS</option></select>
         </div>
 
         <button class="btn-reset" onclick="resetFilters()"><i class="fa-solid fa-arrow-rotate-left"></i> Restablecer</button>
     </div>
 
-    <!-- PESTAÑAS (TABS) -->
+    <!-- PESTAÑAS (TABS) -->  <!-- PESTAÑAS (TABS) -->
     <div class="tabs-container" id="tabsMenu">
-        <button class="tab-btn active" onclick="openTab(event, 'tab-general')">
+        <button class="tab-btn active admin-only" id="tab-btn-general" onclick="openTab(event, 'tab-general')">
             <i class="fa-solid fa-layer-group"></i> GENERAL
             <span class="tab-pill" id="pill-general">0</span>
         </button>
-        <button class="tab-btn" onclick="openTab(event, 'tab-centro')">
+        <button class="tab-btn" id="tab-btn-centro" onclick="openTab(event, 'tab-centro')">
             <i class="fa-solid fa-building"></i> ZONA CENTRO
             <span class="tab-pill" id="pill-centro">0</span>
         </button>
-        <button class="tab-btn" onclick="openTab(event, 'tab-sur')">
+        <button class="tab-btn" id="tab-btn-sur" onclick="openTab(event, 'tab-sur')">
             <i class="fa-solid fa-compass"></i> ZONA SUR
             <span class="tab-pill" id="pill-sur">0</span>
         </button>
-        <button class="tab-btn" onclick="openTab(event, 'tab-norte')">
+        <button class="tab-btn" id="tab-btn-norte" onclick="openTab(event, 'tab-norte')">
             <i class="fa-solid fa-city"></i> ZONA NORTE
             <span class="tab-pill" id="pill-norte">0</span>
         </button>
-        <button class="tab-btn" onclick="openTab(event, 'tab-comparativa')">
+        <button class="tab-btn admin-only" id="tab-btn-comparativa" onclick="openTab(event, 'tab-comparativa')">
             <i class="fa-solid fa-chart-column"></i> COMPARATIVA ZONAS
             <span class="tab-pill" id="pill-comparativa">0</span>
         </button>
     </div>
 
-    <!-- VISTAS DEL DASHBOARD -->
+    <!-- VISTAS DEL DASHBOARD -->!-- VISTAS DEL DASHBOARD -->
     <div class="container" id="dashboard">
         <div id="tab-general" class="tab-content active"><div id="sec-general"></div></div>
         <div id="tab-centro" class="tab-content"><div id="sec-centro"></div></div>
@@ -1447,22 +1495,33 @@
 
         // Aplicar restricciones según el área del usuario conectado
         function applyRolePermissions(role) {
+            const isAdmin = (role === 'admin');
+            currentUserRole = role;
+
+            // 1. Mostrar u ocultar elementos exclusivos del Administrador
+            // (.admin-only: botón sincronizar, badge estado, imprimir/guardar PDF, cargar archivo Excel, etc.)
+            document.querySelectorAll('.admin-only').forEach(el => {
+                el.style.display = isAdmin ? '' : 'none';
+            });
+
             const tag = document.getElementById('currentUserRoleTag');
-            const btnGeneral = document.querySelector("button[onclick*='tab-general']");
-            const btnCentro = document.querySelector("button[onclick*='tab-centro']");
-            const btnSur = document.querySelector("button[onclick*='tab-sur']");
-            const btnNorte = document.querySelector("button[onclick*='tab-norte']");
-            const btnComp = document.querySelector("button[onclick*='tab-comparativa']");
+            const btnGeneral = document.getElementById('tab-btn-general');
+            const btnCentro = document.getElementById('tab-btn-centro');
+            const btnSur = document.getElementById('tab-btn-sur');
+            const btnNorte = document.getElementById('tab-btn-norte');
+            const btnComp = document.getElementById('tab-btn-comparativa');
 
-            // Restablecer visualización de todas las pestañas primero
-            [btnGeneral, btnCentro, btnSur, btnNorte, btnComp].forEach(b => { if (b) b.style.display = 'flex'; });
-
-            if (role === 'centro') {
+            if (isAdmin) {
+                if (tag) tag.textContent = 'ADMIN';
+                [btnGeneral, btnCentro, btnSur, btnNorte, btnComp].forEach(b => { if (b) b.style.display = 'flex'; });
+                openTab(null, 'tab-general');
+            } else if (role === 'centro') {
                 if (tag) tag.textContent = 'ZONA CENTRO';
                 if (btnGeneral) btnGeneral.style.display = 'none';
                 if (btnSur) btnSur.style.display = 'none';
                 if (btnNorte) btnNorte.style.display = 'none';
                 if (btnComp) btnComp.style.display = 'none';
+                if (btnCentro) btnCentro.style.display = 'flex';
                 openTab(null, 'tab-centro');
             } else if (role === 'sur') {
                 if (tag) tag.textContent = 'ZONA SUR';
@@ -1470,6 +1529,7 @@
                 if (btnCentro) btnCentro.style.display = 'none';
                 if (btnNorte) btnNorte.style.display = 'none';
                 if (btnComp) btnComp.style.display = 'none';
+                if (btnSur) btnSur.style.display = 'flex';
                 openTab(null, 'tab-sur');
             } else if (role === 'norte') {
                 if (tag) tag.textContent = 'ZONA NORTE';
@@ -1477,11 +1537,8 @@
                 if (btnCentro) btnCentro.style.display = 'none';
                 if (btnSur) btnSur.style.display = 'none';
                 if (btnComp) btnComp.style.display = 'none';
+                if (btnNorte) btnNorte.style.display = 'flex';
                 openTab(null, 'tab-norte');
-            } else {
-                // Admin: Acceso Total
-                if (tag) tag.textContent = 'ADMIN';
-                openTab(null, 'tab-general');
             }
         }
 
@@ -1565,6 +1622,33 @@
             } finally {
                 isFetching = false;
             }
+        }
+
+        // CONFIGURACIÓN DE BLOQUEO TOTAL PARA GRÁFICOS PLOTLY:
+        // Evita que los gráficos de barras se muevan, deslicen, amplíen o modifiquen al hacer clic
+        // CONFIGURACIÓN Y HELPER DE BLOQUEO TOTAL PARA GRÁFICOS PLOTLY:
+        // Evita que los gráficos de barras se muevan, deslicen, amplíen o modifiquen al hacer clic
+        const LOCKED_PLOTLY_CONFIG = {
+            responsive: true,
+            displayModeBar: false,
+            scrollZoom: false,
+            doubleClick: false,
+            staticPlot: false
+        };
+
+        function makeLockedLayout(baseLayout) {
+            if (!baseLayout) baseLayout = {};
+            baseLayout.dragmode = false;
+            baseLayout.hovermode = 'closest';
+            if (!baseLayout.xaxis) baseLayout.xaxis = {};
+            baseLayout.xaxis.fixedrange = true;
+            if (!baseLayout.yaxis) baseLayout.yaxis = {};
+            baseLayout.yaxis.fixedrange = true;
+            if (baseLayout.legend) {
+                baseLayout.legend.itemclick = false;
+                baseLayout.legend.itemdoubleclick = false;
+            }
+            return baseLayout;
         }
 
         // Procesador ultra-robusto que reconoce columnas con o sin tildes
@@ -2081,12 +2165,13 @@
         });
 
         // --- FILTROS GLOBALES Y EVENTOS ---
-        ['reclutadorSelect', 'estadoLegajoSelect', 'repositorioSelect', 'estadoFinalSelect', 'altaSelect', 'asistenciaSelect', 'distribucionSelect'].forEach(id => {
+        ['fechaSelect', 'reclutadorSelect', 'estadoLegajoSelect', 'repositorioSelect', 'estadoFinalSelect', 'altaSelect', 'asistenciaSelect', 'distribucionSelect'].forEach(id => {
             document.getElementById(id).addEventListener('change', renderDashboard);
         });
 
         function resetFilters() {
             document.getElementById('globalSearchInput').value = '';
+            if (document.getElementById('fechaSelect')) document.getElementById('fechaSelect').value = 'TODOS';
             document.getElementById('reclutadorSelect').value = 'TODOS';
             document.getElementById('estadoLegajoSelect').value = 'TODOS';
             document.getElementById('repositorioSelect').value = 'TODOS';
@@ -2099,6 +2184,7 @@
 
         function getFilteredData() {
             const searchVal = document.getElementById('globalSearchInput').value.trim().toUpperCase();
+            const valFecha = document.getElementById('fechaSelect') ? document.getElementById('fechaSelect').value : 'TODOS';
             const valRec = document.getElementById('reclutadorSelect').value;
             const valLeg = document.getElementById('estadoLegajoSelect').value;
             const valRep = document.getElementById('repositorioSelect').value;
@@ -2108,11 +2194,12 @@
             const valDist = document.getElementById('distribucionSelect').value;
 
             return dbFull.filter(r => {
-                // Búsqueda global en tiempo real (Opción 3)
+                // Búsqueda global en tiempo real
                 if (searchVal) {
                     const fullText = `${r.ITEM} ${r.FECHA} ${r.ZONA} ${r.DISTRIBUCION} ${r.TP_DOC} ${r.NUM_DOC} ${r.NOMBRE} ${r.ALTA} ${r.ASISTENCIA} ${r.REPOSITORIO} ${r.RECLUTADOR} ${r.E_LEGAJO} ${r.OBS} ${r.REGULARIZACION} ${r.E_FINAL}`.toUpperCase();
                     if (!fullText.includes(searchVal)) return false;
                 }
+                if (valFecha !== 'TODOS' && r.FECHA !== valFecha) return false;
                 if (valRec !== 'TODOS' && r.RECLUTADOR !== valRec) return false;
                 if (valLeg !== 'TODOS' && r.E_LEGAJO !== valLeg) return false;
                 if (valRep !== 'TODOS' && r.REPOSITORIO !== valRep) return false;
@@ -2407,11 +2494,11 @@
                 let layoutLeg = {
                     title: { text: '<b>ESTADO GENERAL DE LEGAJOS</b>', font: {family: 'Inter', size: 14.5, color: '#0f1115'}, y: 0.95 },
                     showlegend: true, 
-                    legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.12, font: {size: 11, weight: '600'} },
+                    legend: { itemclick: false, itemdoubleclick: false, orientation: 'h', x: 0.5, xanchor: 'center', y: -0.12, font: {size: 11, weight: '600'} },
                     margin: {t: 50, b: 50, l: 30, r: 30}, 
                     automargin: true, paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)'
                 };
-                Plotly.newPlot('chart-gen-leg-donut', donutLeg, layoutLeg, {responsive: true, displayModeBar: false});
+                Plotly.newPlot('chart-gen-leg-donut', donutLeg, makeLockedLayout(layoutLeg), LOCKED_PLOTLY_CONFIG);
 
                 let finCount = repoFin.length;
                 let procCount = data.filter(r => r.REPOSITORIO === 'EN PROCESO').length;
@@ -2429,11 +2516,11 @@
                 let layoutRepo = {
                     title: { text: '<b>ESTADO GENERAL DEL REPOSITORIO</b>', font: {family: 'Inter', size: 14.5, color: '#0f1115'}, y: 0.95 },
                     showlegend: true, 
-                    legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.12, font: {size: 11, weight: '600'} },
+                    legend: { itemclick: false, itemdoubleclick: false, orientation: 'h', x: 0.5, xanchor: 'center', y: -0.12, font: {size: 11, weight: '600'} },
                     margin: {t: 50, b: 50, l: 30, r: 30}, 
                     automargin: true, paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)'
                 };
-                Plotly.newPlot('chart-gen-repo-donut', donutRepo, layoutRepo, {responsive: true, displayModeBar: false});
+                Plotly.newPlot('chart-gen-repo-donut', donutRepo, makeLockedLayout(layoutRepo), LOCKED_PLOTLY_CONFIG);
 
                 let distMap = {};
                 data.forEach(r => {
@@ -2449,11 +2536,11 @@
                 let layoutDist = {
                     title: { text: '<b>VOLUMEN POR DISTRIBUCIÓN / SEDE LIMA</b>', font: {family: 'Inter', size: 14.5, color: '#0f1115'}, y: 0.95 },
                     margin: {t: 50, b: 40, l: 40, r: 20},
-                    xaxis: { tickfont: {family: 'Inter', size: 11, weight: '700'} },
-                    yaxis: { title: 'Registros', showgrid: true, gridcolor: '#e5e7eb' },
+                    xaxis: { fixedrange: true, tickfont: {family: 'Inter', size: 11, weight: '700'} },
+                    yaxis: { fixedrange: true, title: 'Registros', showgrid: true, gridcolor: '#e5e7eb' },
                     paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)'
                 };
-                Plotly.newPlot('chart-gen-dist-bar', barDist, layoutDist, {responsive: true, displayModeBar: false});
+                Plotly.newPlot('chart-gen-dist-bar', barDist, makeLockedLayout(layoutDist), LOCKED_PLOTLY_CONFIG);
 
                 let recMap = {};
                 data.forEach(r => {
@@ -2471,11 +2558,11 @@
                 let layoutRec = {
                     title: { text: '<b>TOP RECLUTADORES POR VOLUMEN</b>', font: {family: 'Inter', size: 14.5, color: '#0f1115'}, y: 0.95 },
                     margin: {t: 50, b: 40, l: 150, r: 20},
-                    yaxis: { autorange: 'reversed', tickfont: {family: 'Inter', size: 10.5, weight: '700'} },
-                    xaxis: { title: 'Registros', showgrid: true, gridcolor: '#e5e7eb' },
+                    yaxis: { fixedrange: true, autorange: 'reversed', tickfont: {family: 'Inter', size: 10.5, weight: '700'} },
+                    xaxis: { fixedrange: true, title: 'Registros', showgrid: true, gridcolor: '#e5e7eb' },
                     paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)'
                 };
-                Plotly.newPlot('chart-gen-rec-bar', barRec, layoutRec, {responsive: true, displayModeBar: false});
+                Plotly.newPlot('chart-gen-rec-bar', barRec, makeLockedLayout(layoutRec), LOCKED_PLOTLY_CONFIG);
             }
         }
 
@@ -2541,11 +2628,11 @@
                 let layoutLegDonut = {
                     title: { text: '<b>ESTADO DE LEGAJOS</b>', font: {family: 'Inter', size: 14.5, color: '#0f1115'}, y: 0.95 },
                     showlegend: true, 
-                    legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.12, font: {size: 11, weight: '600'} },
+                    legend: { itemclick: false, itemdoubleclick: false, orientation: 'h', x: 0.5, xanchor: 'center', y: -0.12, font: {size: 11, weight: '600'} },
                     margin: {t: 50, b: 50, l: 30, r: 30}, 
                     automargin: true, paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)'
                 };
-                Plotly.newPlot(`chart-leg-donut${suffix}`, donutLegData, layoutLegDonut, {responsive: true, displayModeBar: false});
+                Plotly.newPlot(`chart-leg-donut${suffix}`, donutLegData, makeLockedLayout(layoutLegDonut), LOCKED_PLOTLY_CONFIG);
 
                 let donutRepoData = [{
                     values: [repoFinalizado.length, repoEnProceso.length, repoSinReg.length],
@@ -2559,11 +2646,11 @@
                 let layoutRepoDonut = {
                     title: { text: '<b>AVANCE DE REPOSITORIO</b>', font: {family: 'Inter', size: 14.5, color: '#0f1115'}, y: 0.95 },
                     showlegend: true, 
-                    legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.12, font: {size: 11, weight: '600'} },
+                    legend: { itemclick: false, itemdoubleclick: false, orientation: 'h', x: 0.5, xanchor: 'center', y: -0.12, font: {size: 11, weight: '600'} },
                     margin: {t: 50, b: 50, l: 30, r: 30}, 
                     automargin: true, paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)'
                 };
-                Plotly.newPlot(`chart-repo-donut${suffix}`, donutRepoData, layoutRepoDonut, {responsive: true, displayModeBar: false});
+                Plotly.newPlot(`chart-repo-donut${suffix}`, donutRepoData, makeLockedLayout(layoutRepoDonut), LOCKED_PLOTLY_CONFIG);
 
                 let recMap = {};
                 data.forEach(r => {
@@ -2596,12 +2683,12 @@
                     barmode: 'stack',
                     title: { text: '<b>CARGA Y ESTADO POR RECLUTADOR</b>', font: {family: 'Inter', size: 14.5, color: '#0f1115'}, y: 0.95 },
                     margin: {t: 50, b: 80, l: 40, r: 20},
-                    xaxis: { tickangle: -25, tickfont: {family: 'Inter', size: 10, weight: '700'} },
-                    yaxis: { title: 'Registros', showgrid: true, gridcolor: '#e5e7eb' },
+                    xaxis: { fixedrange: true, tickangle: -25, tickfont: {family: 'Inter', size: 10, weight: '700'} },
+                    yaxis: { fixedrange: true, title: 'Registros', showgrid: true, gridcolor: '#e5e7eb' },
                     legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.28, font: {size: 11} },
                     paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)'
                 };
-                Plotly.newPlot(`chart-rec-bar${suffix}`, barRecData, layoutRec, {responsive: true, displayModeBar: false});
+                Plotly.newPlot(`chart-rec-bar${suffix}`, barRecData, makeLockedLayout(layoutRec), LOCKED_PLOTLY_CONFIG);
 
                 let distMap = {};
                 data.forEach(r => {
@@ -2617,11 +2704,11 @@
                 let layoutDist = {
                     title: { text: '<b>VOLUMEN POR DISTRIBUCIÓN / SEDE</b>', font: {family: 'Inter', size: 14.5, color: '#0f1115'}, y: 0.95 },
                     margin: {t: 50, b: 40, l: 40, r: 20},
-                    xaxis: { tickfont: {family: 'Inter', size: 11, weight: '700'} },
-                    yaxis: { showgrid: true, gridcolor: '#e5e7eb' },
+                    xaxis: { fixedrange: true, tickfont: {family: 'Inter', size: 11, weight: '700'} },
+                    yaxis: { fixedrange: true, showgrid: true, gridcolor: '#e5e7eb' },
                     paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)'
                 };
-                Plotly.newPlot(`chart-dist-bar${suffix}`, barDistData, layoutDist, {responsive: true, displayModeBar: false});
+                Plotly.newPlot(`chart-dist-bar${suffix}`, barDistData, makeLockedLayout(layoutDist), LOCKED_PLOTLY_CONFIG);
             }
         }
 
@@ -2893,13 +2980,13 @@
             let layoutCompLeg = {
                 barmode: 'group',
                 title: { text: '<b>ESTADO DE LEGAJOS POR ZONA</b>', font: {family: 'Inter', size: 14.5, color: '#0f1115'}, y: 0.95 },
-                legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.15, font: {size: 11} },
+                legend: { itemclick: false, itemdoubleclick: false, orientation: 'h', x: 0.5, xanchor: 'center', y: -0.15, font: {size: 11} },
                 margin: {t: 50, b: 60, l: 40, r: 20},
-                xaxis: { tickfont: {family: 'Inter', size: 12, weight: '700'} },
-                yaxis: { title: 'Cantidad', showgrid: true, gridcolor: '#e5e7eb' },
+                xaxis: { fixedrange: true, tickfont: {family: 'Inter', size: 12, weight: '700'} },
+                yaxis: { fixedrange: true, title: 'Cantidad', showgrid: true, gridcolor: '#e5e7eb' },
                 paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)'
             };
-            Plotly.newPlot('chart-comp-legajos', [traceComp, traceIncomp, tracePend], layoutCompLeg, {responsive: true, displayModeBar: false});
+            Plotly.newPlot('chart-comp-legajos', [traceComp, traceIncomp, tracePend], layoutCompLeg, LOCKED_PLOTLY_CONFIG);
 
             // 2. COMPARATIVA REPOSITORIO (BARRAS AGRUPADAS)
             let traceFin = {
@@ -2920,13 +3007,13 @@
             let layoutCompRepo = {
                 barmode: 'group',
                 title: { text: '<b>ESTADO DE REPOSITORIO POR ZONA</b>', font: {family: 'Inter', size: 14.5, color: '#0f1115'}, y: 0.95 },
-                legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.15, font: {size: 11} },
+                legend: { itemclick: false, itemdoubleclick: false, orientation: 'h', x: 0.5, xanchor: 'center', y: -0.15, font: {size: 11} },
                 margin: {t: 50, b: 60, l: 40, r: 20},
-                xaxis: { tickfont: {family: 'Inter', size: 12, weight: '700'} },
-                yaxis: { title: 'Cantidad', showgrid: true, gridcolor: '#e5e7eb' },
+                xaxis: { fixedrange: true, tickfont: {family: 'Inter', size: 12, weight: '700'} },
+                yaxis: { fixedrange: true, title: 'Cantidad', showgrid: true, gridcolor: '#e5e7eb' },
                 paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)'
             };
-            Plotly.newPlot('chart-comp-repo', [traceFin, traceProc, traceSinReg], layoutCompRepo, {responsive: true, displayModeBar: false});
+            Plotly.newPlot('chart-comp-repo', [traceFin, traceProc, traceSinReg], layoutCompRepo, LOCKED_PLOTLY_CONFIG);
 
             // 3. COMPARATIVA % CUMPLIMIENTO
             let pctComp = [parseFloat(sCentro.compPct), parseFloat(sSur.compPct), parseFloat(sNorte.compPct)];
@@ -2946,13 +3033,13 @@
             let layoutCompPct = {
                 barmode: 'group',
                 title: { text: '<b>% EFICACIA Y CUMPLIMIENTO POR ZONA</b>', font: {family: 'Inter', size: 14.5, color: '#0f1115'}, y: 0.95 },
-                legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.15, font: {size: 11} },
+                legend: { itemclick: false, itemdoubleclick: false, orientation: 'h', x: 0.5, xanchor: 'center', y: -0.15, font: {size: 11} },
                 margin: {t: 50, b: 60, l: 40, r: 20},
-                xaxis: { tickfont: {family: 'Inter', size: 12, weight: '700'} },
-                yaxis: { title: '% de Avance', range: [0, 100], showgrid: true, gridcolor: '#e5e7eb' },
+                xaxis: { fixedrange: true, tickfont: {family: 'Inter', size: 12, weight: '700'} },
+                yaxis: { fixedrange: true, title: '% de Avance', range: [0, 100], showgrid: true, gridcolor: '#e5e7eb' },
                 paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)'
             };
-            Plotly.newPlot('chart-comp-pct', [tracePctComp, tracePctFin], layoutCompPct, {responsive: true, displayModeBar: false});
+            Plotly.newPlot('chart-comp-pct', [tracePctComp, tracePctFin], layoutCompPct, LOCKED_PLOTLY_CONFIG);
 
             // 4. DONUT PARTICIPACIÓN POR ZONA
             let donutShareData = [{
@@ -2966,11 +3053,11 @@
             }];
             let layoutShare = {
                 title: { text: '<b>DISTRIBUCIÓN DEL VOLUMEN TOTAL</b>', font: {family: 'Inter', size: 14.5, color: '#0f1115'}, y: 0.95 },
-                legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.15, font: {size: 11} },
+                legend: { itemclick: false, itemdoubleclick: false, orientation: 'h', x: 0.5, xanchor: 'center', y: -0.15, font: {size: 11} },
                 margin: {t: 50, b: 60, l: 30, r: 30},
                 paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)'
             };
-            Plotly.newPlot('chart-comp-share', donutShareData, layoutShare, {responsive: true, displayModeBar: false});
+            Plotly.newPlot('chart-comp-share', donutShareData, makeLockedLayout(layoutShare), LOCKED_PLOTLY_CONFIG);
         }
     </script>
 </body>
