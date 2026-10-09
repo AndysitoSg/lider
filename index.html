@@ -1243,6 +1243,21 @@
 
     <script>
         // ==============================================================
+        // CONFIGURACIÓN OFICIAL DE SUPABASE (CREDENTIALS & CLIENT)
+        // ==============================================================
+        const SUPABASE_URL = 'https://wecqemjngqbtyaopifsg.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_3Sp2qOQmJ62tUx1UKINdqw_2VocLQ2j';
+        let supabaseClient = null;
+
+        try {
+            if (window.supabase && window.supabase.createClient) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            }
+        } catch (e) {
+            console.warn("Inicialización de cliente Supabase:", e);
+        }
+
+        // ==============================================================
         // SISTEMA DE AUTENTICACIÓN, ROLES POR ZONA Y SESIÓN DE 10 MINUTOS
         // ==============================================================
         const SESSION_TIMEOUT_MS = 10 * 60 * 1000; // 10 Minutos exactos
@@ -1475,19 +1490,8 @@
         // ==============================================================
         // SINCRONIZACIÓN SUTIL Y AUTOMÁTICA CADA 5 SEGUNDOS (SUPABASE)
         // ==============================================================
-        const SUPABASE_URL = 'https://wecqemjngqbtyaopifsg.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_3Sp2qOQmJ62tUx1UKINdqw_2VocLQ2j';
-        let supabaseClient = null;
         let lastDataHash = "";
         let isFetching = false;
-
-        try {
-            if (window.supabase && window.supabase.createClient) {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            }
-        } catch (e) {
-            console.warn("Supabase SDK:", e);
-        }
 
         // Función de normalización insensible a tildes y espacios
         function normalizeKey(str) {
