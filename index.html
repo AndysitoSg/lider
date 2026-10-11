@@ -2027,6 +2027,11 @@
             return id;
         }
 
+                function clean(val) {
+            if (val === null || val === undefined) return '';
+            return String(val).trim().toUpperCase();
+        }
+
         function formatPct(num, total) { 
             return total === 0 ? "0.0%" : ((num / total) * 100).toFixed(1) + "%"; 
         }
