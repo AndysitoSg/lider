@@ -12,25 +12,28 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --rojo-liderman: #D31145;
-            --rojo-hover: #b80c3a;
-            --negro-liderman: #0f1115;
-            --negro-card: #181b20;
-            --gris-texto: #4b5563;
-            --blanco: #FFFFFF;
-            --borde: #e5e7eb;
-            --fondo: #f4f7f9;
-            --alerta: #ea580c;
-            --verde: #166534;
-            --verde-bg: #dcfce7;
-            --azul: #1e40af;
-            --azul-bg: #dbeafe;
-            --amarillo: #854d0e;
-            --amarillo-bg: #fef08a;
-            --morado: #6b21a8;
-            --morado-bg: #f3e8ff;
-        }
+            :root {
+        --rojo-liderman: #D31145;
+        --rojo-hover: #b80c3a;
+        --rojo-suave: #fee2e2;
+        --rojo-borde: #fca5a5;
+        --rojo-texto: #991b1b;
+        --negro-liderman: #0f1115;
+        --negro-card: #181b20;
+        --negro-texto: #111827;
+        --plomo-oscuro: #334155;
+        --plomo-medio: #64748b;
+        --plomo-claro: #94a3b8;
+        --plomo-perla: #cbd5e1;
+        --plomo-borde: #e2e8f0;
+        --plomo-bg: #f1f5f9;
+        --plomo-fondo: #f8fafc;
+        --gris-texto: #475569;
+        --blanco: #ffffff;
+        --borde: #e2e8f0;
+        --fondo: #f8fafc;
+        --fondo-card: #ffffff;
+    }
         
         * { box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background-color: var(--fondo); margin: 0; color: var(--negro-liderman); }
@@ -99,9 +102,9 @@
         
         
         .btn-cloud-sync {
-            background: #1e40af;
+            background: #0f1115;
             color: white;
-            border: 1px solid #1d4ed8;
+            border: 1px solid #334155;
             padding: 7px 14px;
             border-radius: 8px;
             font-family: inherit;
@@ -120,9 +123,9 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(22, 101, 52, 0.2);
-            color: #4ade80;
-            border: 1px solid rgba(22, 163, 74, 0.4);
+            background: rgba(211, 17, 69, 0.15);
+            color: #ff859d;
+            border: 1px solid rgba(211, 17, 69, 0.4);
             padding: 6px 14px;
             border-radius: 20px;
             font-size: 11.5px;
@@ -132,24 +135,24 @@
         .pulse-dot {
             width: 8px;
             height: 8px;
-            background-color: #22c55e;
+            background-color: var(--rojo-liderman);
             border-radius: 50%;
             display: inline-block;
-            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
-            animation: pulse-green 2s infinite;
+            box-shadow: 0 0 0 0 rgba(211, 17, 69, 0.7);
+            animation: pulse-red 2s infinite;
         }
-        @keyframes pulse-green {
+        @keyframes pulse-red {
             0% {
                 transform: scale(0.95);
-                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+                box-shadow: 0 0 0 0 rgba(211, 17, 69, 0.7);
             }
             70% {
                 transform: scale(1);
-                box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+                box-shadow: 0 0 0 8px rgba(211, 17, 69, 0);
             }
             100% {
                 transform: scale(0.95);
-                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+                box-shadow: 0 0 0 0 rgba(211, 17, 69, 0);
             }
         }
 
@@ -175,13 +178,13 @@
         }
         .migration-status-badge.status-loading {
             background: rgba(37, 99, 235, 0.25);
-            color: #93c5fd;
-            border: 1px solid #3b82f6;
+            color: var(--plomo-claro);
+            border: 1px solid var(--plomo-perla);
         }
         .migration-status-badge.status-success {
-            background: #052e16;
-            color: #4ade80;
-            border: 1.5px solid #16a34a;
+            background: #0f1115;
+            color: #ffffff;
+            border: 1px solid #D31145;
             box-shadow: 0 0 12px rgba(74, 222, 128, 0.25);
         }
         .migration-status-badge.status-error {
@@ -193,7 +196,7 @@
         }
 
         .btn-cloud-sync:hover {
-            background: #172554;
+            background: #1e293b;
             box-shadow: 0 3px 8px rgba(30, 64, 175, 0.3);
         }
         .sheets-modal-box {
@@ -397,7 +400,7 @@
         .badge-group { display: flex; gap: 10px; flex-wrap: wrap; }
         .badge { 
             background: var(--rojo-liderman); 
-            color: white; 
+            color: #ffffff; 
             padding: 6px 14px; 
             border-radius: 30px; 
             font-size: 11.5px; 
@@ -408,35 +411,129 @@
             gap: 6px;
         }
         .badge.secondary { background: var(--negro-liderman); box-shadow: 0 4px 8px rgba(15, 17, 21, 0.2); }
-        .badge.alta { background: var(--morado); box-shadow: 0 4px 8px rgba(107, 33, 168, 0.2); }
+        .badge.plomo { background: var(--plomo-oscuro); color: #ffffff; box-shadow: 0 4px 8px rgba(51, 65, 85, 0.2); }
 
         /* TARJETAS DE KPIS - EN EL ORDEN EXACTO SOLICITADO */
-        .kpi-grid { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 22px; }
-        .kpi-card { 
-            background: var(--blanco); 
-            padding: 18px; 
-            border-radius: 12px; 
-            flex: 1; 
-            min-width: 155px; 
-            border: 1px solid var(--borde); 
-            border-bottom: 4px solid var(--negro-liderman); 
-            cursor: pointer; 
-            transition: all 0.2s; 
-            box-shadow: 0 3px 6px -1px rgba(0,0,0,0.04); 
-            position: relative; 
-            overflow: hidden; 
-        }
-        .kpi-card:hover { 
-            transform: translateY(-4px); 
-            box-shadow: 0 14px 22px -5px rgba(0,0,0,0.1); 
-            border-bottom-color: var(--rojo-liderman); 
-        }
-        .kpi-card.repo-card { border-bottom-color: var(--verde); }
-        .kpi-card.pend-card { border-bottom-color: var(--amarillo); }
-        .kpi-card.incomp-card { border-bottom-color: var(--alerta); }
-        .kpi-card.comp-card { border-bottom-color: var(--rojo-liderman); }
-        .kpi-card.aprob-card { border-bottom-color: #047857; }
-        .kpi-card.alta-card { border-bottom-color: var(--morado); }
+        .kpi-grid { 
+        display: grid; 
+        grid-template-columns: repeat(6, 1fr); 
+        gap: 14px; 
+        margin-bottom: 24px; 
+    }
+    @media (max-width: 1280px) {
+        .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+        .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    }
+    @media (max-width: 480px) {
+        .kpi-grid { grid-template-columns: 1fr; }
+    }
+    .kpi-card { 
+        background: var(--blanco); 
+        padding: 16px 14px; 
+        border-radius: 12px; 
+        border: 1px solid var(--borde); 
+        border-top: 4px solid var(--negro-liderman); 
+        cursor: pointer; 
+        transition: all 0.22s ease-in-out; 
+        box-shadow: 0 2px 5px -1px rgba(15,17,21,0.05); 
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 140px;
+        position: relative;
+    }
+    .kpi-card:hover { 
+        transform: translateY(-4px); 
+        box-shadow: 0 12px 20px -4px rgba(15,17,21,0.12); 
+        border-top-color: var(--rojo-liderman); 
+    }
+    .kpi-card.card-proy { border-top-color: var(--negro-liderman); }
+    .kpi-card.card-aprob { border-top-color: var(--rojo-liderman); }
+    .kpi-card.card-avance { border-top-color: var(--plomo-oscuro); }
+    .kpi-card.card-cero { border-top-color: var(--plomo-medio); }
+    .kpi-card.card-sinreg { border-top-color: var(--plomo-claro); }
+    .kpi-card.card-incomp { border-top-color: var(--rojo-liderman); }
+    
+    .kpi-card .kpi-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+    .kpi-card .kpi-title { 
+        font-size: 11px; 
+        font-weight: 800; 
+        color: var(--gris-texto); 
+        text-transform: uppercase; 
+        letter-spacing: 0.5px;
+        line-height: 1.3;
+    }
+    .kpi-card .kpi-icon {
+        font-size: 14px;
+        color: var(--plomo-claro);
+        transition: color 0.2s;
+    }
+    .kpi-card:hover .kpi-icon {
+        color: var(--rojo-liderman);
+    }
+    .kpi-card .kpi-value-center { 
+        font-size: 32px; 
+        font-weight: 900; 
+        color: var(--negro-liderman); 
+        line-height: 1; 
+        margin: 6px 0; 
+        font-feature-settings: "tnum"; 
+        text-align: center;
+    }
+    .kpi-card .kpi-value-center.text-red {
+        color: var(--rojo-liderman);
+    }
+    .kpi-card .kpi-footer-sub { 
+        display: flex; 
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        margin-top: 4px;
+        border-top: 1px solid var(--plomo-bg);
+        padding-top: 8px;
+    }
+    .kpi-card .kpi-colab-label { 
+        font-size: 11.5px; 
+        font-weight: 800; 
+        color: var(--negro-liderman); 
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+    }
+    .kpi-card .kpi-badge-pill {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: var(--plomo-bg);
+        color: var(--plomo-oscuro);
+        border: 1px solid var(--plomo-perla);
+        text-align: center;
+        white-space: nowrap;
+    }
+    .kpi-card .kpi-badge-pill.pill-red {
+        background: var(--rojo-suave);
+        color: var(--rojo-liderman);
+        border-color: var(--rojo-borde);
+    }
+        .kpi-card.card-proy { border-bottom-color: var(--negro-liderman); }
+        .kpi-card.card-aprob { border-bottom-color: var(--rojo-liderman); }
+        .kpi-card.card-avance { border-bottom-color: var(--plomo-oscuro); }
+        .kpi-card.card-cero { border-bottom-color: var(--plomo-medio); }
+        .kpi-card.card-sinreg { border-bottom-color: var(--plomo-claro); }
+        .kpi-card.card-incomp { border-bottom-color: var(--rojo-liderman); }
+        
+        .kpi-card.card-aprob .kpi-value, .kpi-card.card-incomp .kpi-value { color: var(--rojo-liderman); }
+        .kpi-card.card-avance .kpi-value { color: var(--plomo-oscuro); }
+        .kpi-card.card-cero .kpi-value, .kpi-card.card-sinreg .kpi-value { color: var(--plomo-medio); }
+        .kpi-card.card-proy .kpi-value { color: var(--negro-liderman); }
 
         .kpi-icon { 
             position: absolute; 
@@ -452,10 +549,10 @@
         .kpi-title { font-size: 10.5px; color: var(--gris-texto); font-weight: 800; text-transform: uppercase; margin-bottom: 7px; letter-spacing: 0.5px; }
         .kpi-value { font-size: 26px; font-weight: 900; color: var(--negro-liderman); letter-spacing: -0.5px; line-height: 1; }
         .kpi-value.highlight { color: var(--rojo-liderman); }
-        .kpi-value.green { color: #15803d; }
-        .kpi-value.orange { color: var(--alerta); }
-        .kpi-value.purple { color: var(--morado); }
-        .kpi-value.amber { color: var(--amarillo); }
+        .kpi-value.green { color: var(--rojo-liderman); }
+        .kpi-value.orange { color: var(--plomo-oscuro); }
+        .kpi-value.purple { color: var(--negro-liderman); }
+        .kpi-value.amber { color: var(--plomo-medio); }
         .kpi-subtext { font-size: 11px; color: #6b7280; margin-top: 9px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; }
 
         /* CONTENEDOR DE GRÁFICOS */
@@ -489,9 +586,9 @@
             transform: translateY(-3px);
             box-shadow: 0 12px 20px -5px rgba(0,0,0,0.08);
         }
-        .general-zone-box.centro { border-top-color: #2563eb; }
-        .general-zone-box.sur { border-top-color: #ca8a04; }
-        .general-zone-box.norte { border-top-color: #16a34a; }
+        .general-zone-box.centro { border-top-color: var(--negro-liderman); }
+        .general-zone-box.sur { border-top-color: var(--rojo-liderman); }
+        .general-zone-box.norte { border-top-color: var(--plomo-oscuro); }
         .general-zone-top {
             display: flex;
             justify-content: space-between;
@@ -611,7 +708,7 @@
         .modal-toolbar input { min-width: 320px; padding: 7px 13px; }
         .btn-export {
             padding: 7px 14px;
-            background: #166534;
+            background: #0f1115;
             color: white;
             border: none;
             border-radius: 8px;
@@ -623,7 +720,7 @@
             gap: 6px;
             transition: all 0.2s;
         }
-        .btn-export:hover { background: #14532d; }
+        .btn-export:hover { background: #1e293b; }
         .modal-body { overflow-y: auto; overflow-x: auto; padding: 18px 26px; background: #f8fafc; }
         
         .data-table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--blanco); border-radius: 10px; border: 1px solid var(--borde); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
@@ -722,13 +819,13 @@
             transition: all 0.2s ease !important;
         }
         .login-input:focus {
-            border-color: #2563eb !important;
+            border-color: var(--rojo-liderman) !important;
             background: #ffffff !important;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
+            box-shadow: 0 0 0 3px rgba(211, 17, 69, 0.15) !important;
         }
         .btn-acceder {
             margin-top: 8px;
-            background: #2563eb;
+            background: var(--rojo-liderman);
             color: #ffffff;
             border: none;
             border-radius: 6px;
@@ -747,7 +844,7 @@
             width: 120px;
         }
         .btn-acceder:hover {
-            background: #1d4ed8;
+            background: var(--rojo-hover);
             box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
         }
         .login-error-msg {
@@ -1107,7 +1204,7 @@
             </div>
 
             <!-- BOTONES Y ESTADOS EXCLUSIVOS DEL ADMINISTRADOR -->
-            <button class="btn-cloud-sync admin-only" id="btnSyncSupabase" onclick="fetchFromSupabase(false)" title="Sincronizar manualmente con Supabase" style="background:#166534; border-color:#15803d;">
+            <button class="btn-cloud-sync admin-only" id="btnSyncSupabase" onclick="fetchFromSupabase(false)" title="Sincronizar manualmente con Supabase" style="background:var(--rojo-liderman); border-color:var(--rojo-hover);">
                 <i class="fa-solid fa-bolt"></i> Sincronizar Supabase
             </button>
             <span class="migration-status-badge status-idle admin-only" id="migrationStatusBadge" title="Estado de la conexión a Supabase">
@@ -1122,8 +1219,8 @@
 
             <!-- CONTADOR DE SESIÓN (VISIBLE PARA TODOS) -->
             <div class="session-info-badge" id="sessionTimerBadge" title="La sesión expira tras 10 minutos de inactividad">
-                <i class="fa-regular fa-clock" style="color:#38bdf8;"></i>
-                <span id="currentUserRoleTag" style="font-weight:800; color:#38bdf8; text-transform:uppercase;">ADMIN</span>
+                <i class="fa-regular fa-clock" style="color:#D31145;"></i>
+                <span id="currentUserRoleTag" style="font-weight:800; color:#D31145; text-transform:uppercase;">ADMIN</span>
                 <span>•</span>
                 <span id="sessionCountdownText">10:00</span>
             </div>
@@ -1253,7 +1350,7 @@
     <!-- MODAL CONFIGURACIÓN GOOGLE SHEETS (OPCIÓN 1) -->
     <div id="sheetsModal" class="modal">
         <div class="sheets-modal-box">
-            <h3><i class="fa-solid fa-cloud" style="color: #2563eb;"></i> Conectar Base de Datos Google Sheets</h3>
+            <h3><i class="fa-solid fa-cloud" style="color: var(--rojo-liderman);"></i> Conectar Base de Datos Google Sheets</h3>
             <p style="font-size: 12.5px; color: var(--gris-texto); line-height: 1.5; margin: 8px 0 16px 0;">
                 Ingresa el enlace de tu hoja de cálculo compartida en Google Drive. El dashboard consultará automáticamente la pestaña <strong>LISTA GENERAL</strong> en tiempo real.
             </p>
@@ -1261,7 +1358,7 @@
                 <label>Enlace o ID de la Hoja de Google Sheets:</label>
                 <input type="text" id="sheetsUrlInput" placeholder="https://docs.google.com/spreadsheets/d/1A2B3C.../edit">
             </div>
-            <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 10px 14px; border-radius: 4px; font-size: 11.5px; color: #1e40af; margin-bottom: 12px;">
+            <div style="background: var(--plomo-bg); border-left: 4px solid var(--negro-liderman); padding: 10px 14px; border-radius: 4px; font-size: 11.5px; color: var(--plomo-oscuro); margin-bottom: 12px;">
                 <i class="fa-solid fa-circle-info"></i> <strong>Requisito clave:</strong> En Google Sheets, asegúrate de que el acceso general esté configurado como <strong>"Cualquier persona con el enlace (Lector)"</strong>.
             </div>
             <div class="sheets-modal-actions">
@@ -1614,7 +1711,7 @@
                     const statusText = document.getElementById('liveStatusText');
                     if (statusText) statusText.textContent = `EN VIVO (${horaStr})`;
                     const tag = document.getElementById('lastUpdatedTag');
-                    if (tag) tag.innerHTML = `<i class="fa-solid fa-bolt" style="color:#10b981;"></i> ${dbFull.length} REGISTROS (${horaStr})`;
+                    if (tag) tag.innerHTML = `<i class="fa-solid fa-bolt" style="color:#D31145;"></i> ${dbFull.length} REGISTROS (${horaStr})`;
                 }
 
             } catch (err) {
@@ -1997,25 +2094,25 @@
                     let efinal = r['E_FINAL'] || 'NO APROBADO';
                     
                     let altaColor = '#4b5563'; let altaBg = '#f3f4f6';
-                    if (isAltaEfectiva(alta)) { altaColor = '#166534'; altaBg = '#dcfce7'; }
-                    else if (alta.includes('VER') || alta.includes('PEND')) { altaColor = '#6b21a8'; altaBg = '#f3e8ff'; }
+                    if (isAltaEfectiva(alta)) { altaColor = '#D31145'; altaBg = '#fee2e2'; }
+                    else if (alta.includes('VER') || alta.includes('PEND')) { altaColor = '#475569'; altaBg = '#f1f5f9'; }
 
-                    let asisColor = '#1e40af'; let asisBg = '#dbeafe';
+                    let asisColor = '#334155'; let asisBg = '#f1f5f9';
                     if (asistencia === 'NO') { asisColor = '#991b1b'; asisBg = '#fee2e2'; }
                     else if (asistencia === 'POR REVISAR') { asisColor = '#4b5563'; asisBg = '#f3f4f6'; }
 
                     let legColor = '#374151'; let legBg = '#f3f4f6';
-                    if(legajo === 'COMPLETO') { legColor = '#1e40af'; legBg = '#dbeafe'; }
-                    else if(legajo === 'INCOMPLETO') { legColor = '#9a3412'; legBg = '#ffedd5'; }
-                    else if(legajo === 'PENDIENTE') { legColor = '#854d0e'; legBg = '#fef08a'; }
+                    if(legajo === 'COMPLETO') { legColor = '#D31145'; legBg = '#fee2e2'; }
+                    else if(legajo === 'INCOMPLETO') { legColor = '#991b1b'; legBg = '#fee2e2'; }
+                    else if(legajo === 'PENDIENTE') { legColor = '#475569'; legBg = '#f1f5f9'; }
 
                     let repoColor = '#374151'; let repoBg = '#f3f4f6';
-                    if(repo === 'FINALIZADO') { repoColor = '#166534'; repoBg = '#dcfce7'; }
-                    else if(repo === 'EN PROCESO') { repoColor = '#1e40af'; repoBg = '#dbeafe'; }
+                    if(repo === 'FINALIZADO') { repoColor = '#D31145'; repoBg = '#fee2e2'; }
+                    else if(repo === 'EN PROCESO') { repoColor = '#334155'; repoBg = '#f1f5f9'; }
                     else if(repo === 'SIN REGISTRO') { repoColor = '#6b7280'; repoBg = '#f3f4f6'; }
 
                     let finColor = '#991b1b'; let finBg = '#fee2e2';
-                    if(efinal === 'APROBADO') { finColor = '#166534'; finBg = '#dcfce7'; }
+                    if(efinal === 'APROBADO') { finColor = '#D31145'; finBg = '#fee2e2'; }
 
                     html += `<tr>
                         <td style="font-weight: 800; color: #6b7280;">#${item}</td>
@@ -2236,75 +2333,104 @@
 
         // HELPER PARA CONSTRUIR LAS TARJETAS EN EL ORDEN EXACTO SOLICITADO:
         // [Total Registros] -> [Repositorio Finalizado] -> [Legajos Pendientes] -> [Legajos Incompletos] -> [Legajos Completos] -> [Aprobación Final] -> [Colaborador con Alta]
-        function buildOrderedKpisHtml(prefixTitle, data) {
+                function buildOrderedKpisHtml(prefixTitle, data) {
             const total = data.length;
-            const repoFinalizado = data.filter(r => r.REPOSITORIO === 'FINALIZADO');
-            const pendientes = data.filter(r => r.E_LEGAJO === 'PENDIENTE');
-            const incompletos = data.filter(r => r.E_LEGAJO === 'INCOMPLETO');
-            const completos = data.filter(r => r.E_LEGAJO === 'COMPLETO');
-            const aprobados = data.filter(r => r.E_FINAL === 'APROBADO');
+            const aprobados = data.filter(r => clean(r.E_FINAL) === 'APROBADO');
+            const avanceParcial = data.filter(r => {
+                let p = r.AVANCE_NUM !== undefined ? r.AVANCE_NUM : 0;
+                return p >= 4 && p <= 96;
+            });
+            const conRegCero = data.filter(r => {
+                let p = r.AVANCE_NUM !== undefined ? r.AVANCE_NUM : 0;
+                let repo = clean(r.REPOSITORIO);
+                return repo !== 'SIN REGISTRO' && p === 0;
+            });
+            const sinRegistro = data.filter(r => {
+                let repo = clean(r.REPOSITORIO);
+                return repo === 'SIN REGISTRO';
+            });
+            const incompletos = data.filter(r => clean(r.E_LEGAJO) === 'INCOMPLETO');
             const conAlta = data.filter(r => isAltaEfectiva(r.ALTA));
             const porVerAlta = data.filter(r => !isAltaEfectiva(r.ALTA));
 
-            let altaDisplay = conAlta.length > 0 ? formatPct(conAlta.length, total) : `${porVerAlta.length}`;
-            let altaSub = conAlta.length > 0 ? `<strong>${conAlta.length}</strong> confirmados` : `<strong>${porVerAlta.length}</strong> por verificar`;
-
             return `
                 <div class="kpi-grid">
-                    <!-- 1. TOTAL REGISTROS -->
-                    <div class="kpi-card" onclick="openDetailModal('${prefixTitle} - Total Colaboradores', '${saveToStore(data)}')">
-                        <i class="fa-solid fa-users kpi-icon"></i>
-                        <div class="kpi-title">Total Registros</div>
-                        <div class="kpi-value">${total}</div>
-                        <div class="kpi-subtext"><span>Colaboradores</span><i class="fa-solid fa-chevron-right"></i></div>
+                    <!-- 1. TOTAL DE PROYECTADOS -->
+                    <div class="kpi-card card-proy" onclick="openDetailModal('${prefixTitle} - Total Proyectados', '${saveToStore(data)}')">
+                        <div class="kpi-header">
+                            <span class="kpi-title">TOTAL DE PROYECTADOS</span>
+                            <i class="fa-solid fa-users kpi-icon"></i>
+                        </div>
+                        <div class="kpi-value-center">${total}</div>
+                        <div class="kpi-footer-sub">
+                            <span class="kpi-colab-label">COLABORADORES</span>
+                            <span class="kpi-badge-pill">100% de la muestra</span>
+                        </div>
                     </div>
 
-                    <!-- 2. REPOSITORIO FINALIZADO -->
-                    <div class="kpi-card repo-card" onclick="openDetailModal('${prefixTitle} - Repositorio Finalizado', '${saveToStore(repoFinalizado)}')">
-                        <i class="fa-solid fa-cloud-arrow-up kpi-icon"></i>
-                        <div class="kpi-title" style="color:var(--verde);">Repositorio Finalizado</div>
-                        <div class="kpi-value green">${formatPct(repoFinalizado.length, total)}</div>
-                        <div class="kpi-subtext"><span><strong>${repoFinalizado.length}</strong> al 100% en nube</span><i class="fa-solid fa-chevron-right"></i></div>
+                    <!-- 2. TOTAL DE LEGAJOS APROBADOS -->
+                    <div class="kpi-card card-aprob" onclick="openDetailModal('${prefixTitle} - Total Legajos Aprobados', '${saveToStore(aprobados)}')">
+                        <div class="kpi-header">
+                            <span class="kpi-title">TOTAL DE LEGAJOS APROBADOS</span>
+                            <i class="fa-solid fa-circle-check kpi-icon"></i>
+                        </div>
+                        <div class="kpi-value-center text-red">${aprobados.length}</div>
+                        <div class="kpi-footer-sub">
+                            <span class="kpi-colab-label">COLABORADORES</span>
+                            <span class="kpi-badge-pill pill-red">${formatPct(aprobados.length, total)} Aprobación Final</span>
+                        </div>
                     </div>
 
-                    <!-- 3. LEGAJOS PENDIENTES -->
-                    <div class="kpi-card pend-card" onclick="openDetailModal('${prefixTitle} - Legajos Pendientes', '${saveToStore(pendientes)}')">
-                        <i class="fa-solid fa-clock-rotate-left kpi-icon"></i>
-                        <div class="kpi-title" style="color:var(--amarillo);">Legajos Pendientes</div>
-                        <div class="kpi-value amber">${formatPct(pendientes.length, total)}</div>
-                        <div class="kpi-subtext"><span><strong>${pendientes.length}</strong> por recepcionar</span><i class="fa-solid fa-chevron-right"></i></div>
+                    <!-- 3. TOTAL DE LEGAJOS POR AVANCE (4%-96%) -->
+                    <div class="kpi-card card-avance" onclick="openDetailModal('${prefixTitle} - Legajos por Avance (4%-96%)', '${saveToStore(avanceParcial)}')">
+                        <div class="kpi-header">
+                            <span class="kpi-title">TOTAL DE LEGAJOS POR AVANCE (4%-96%)</span>
+                            <i class="fa-solid fa-bars-progress kpi-icon"></i>
+                        </div>
+                        <div class="kpi-value-center">${avanceParcial.length}</div>
+                        <div class="kpi-footer-sub">
+                            <span class="kpi-colab-label">COLABORADORES</span>
+                            <span class="kpi-badge-pill">${formatPct(avanceParcial.length, total)} En proceso activo</span>
+                        </div>
                     </div>
 
-                    <!-- 4. LEGAJOS INCOMPLETOS -->
-                    <div class="kpi-card incomp-card" onclick="openDetailModal('${prefixTitle} - Legajos Incompletos', '${saveToStore(incompletos)}')">
-                        <i class="fa-solid fa-folder-open kpi-icon"></i>
-                        <div class="kpi-title" style="color:var(--alerta);">Legajos Incompletos</div>
-                        <div class="kpi-value orange">${formatPct(incompletos.length, total)}</div>
-                        <div class="kpi-subtext"><span><strong>${incompletos.length}</strong> con observaciones</span><i class="fa-solid fa-chevron-right"></i></div>
+                    <!-- 4. TOTAL DE COLABORADORES CON REGISTRO PERO SIN AVANCE (0%) -->
+                    <div class="kpi-card card-cero" onclick="openDetailModal('${prefixTitle} - Con Registro pero Sin Avance (0%)', '${saveToStore(conRegCero)}')">
+                        <div class="kpi-header">
+                            <span class="kpi-title">CON REGISTRO PERO SIN AVANCE (0%)</span>
+                            <i class="fa-solid fa-folder-open kpi-icon"></i>
+                        </div>
+                        <div class="kpi-value-center">${conRegCero.length}</div>
+                        <div class="kpi-footer-sub">
+                            <span class="kpi-colab-label">COLABORADORES</span>
+                            <span class="kpi-badge-pill">${formatPct(conRegCero.length, total)} Carpeta sin carga</span>
+                        </div>
                     </div>
 
-                    <!-- 5. LEGAJOS COMPLETOS -->
-                    <div class="kpi-card comp-card" onclick="openDetailModal('${prefixTitle} - Legajos Completos', '${saveToStore(completos)}')">
-                        <i class="fa-solid fa-folder-check kpi-icon"></i>
-                        <div class="kpi-title" style="color:var(--rojo-liderman);">Legajos Completos</div>
-                        <div class="kpi-value highlight">${formatPct(completos.length, total)}</div>
-                        <div class="kpi-subtext"><span><strong>${completos.length}</strong> expedientes conformes</span><i class="fa-solid fa-chevron-right"></i></div>
+                    <!-- 5. TOTAL DE COLABORADORES SIN REGISTRO -->
+                    <div class="kpi-card card-sinreg" onclick="openDetailModal('${prefixTitle} - Colaboradores Sin Registro', '${saveToStore(sinRegistro)}')">
+                        <div class="kpi-header">
+                            <span class="kpi-title">TOTAL DE COLABORADORES SIN REGISTRO</span>
+                            <i class="fa-solid fa-user-xmark kpi-icon"></i>
+                        </div>
+                        <div class="kpi-value-center">${sinRegistro.length}</div>
+                        <div class="kpi-footer-sub">
+                            <span class="kpi-colab-label">COLABORADORES</span>
+                            <span class="kpi-badge-pill">${formatPct(sinRegistro.length, total)} Sin carpeta en nube</span>
+                        </div>
                     </div>
 
-                    <!-- 6. APROBACIÓN FINAL -->
-                    <div class="kpi-card aprob-card" onclick="openDetailModal('${prefixTitle} - Aprobación Final', '${saveToStore(aprobados)}')">
-                        <i class="fa-solid fa-circle-check kpi-icon"></i>
-                        <div class="kpi-title" style="color:#047857;">Aprobación Final</div>
-                        <div class="kpi-value green">${formatPct(aprobados.length, total)}</div>
-                        <div class="kpi-subtext"><span><strong>${aprobados.length}</strong> listos para ingreso</span><i class="fa-solid fa-chevron-right"></i></div>
-                    </div>
-
-                    <!-- 7. COLABORADOR CON ALTA -->
-                    <div class="kpi-card alta-card" onclick="openDetailModal('${prefixTitle} - Colaboradores con Alta', '${saveToStore(conAlta.length > 0 ? conAlta : porVerAlta)}')">
-                        <i class="fa-solid fa-user-check kpi-icon" style="color: rgba(107, 33, 168, 0.1);"></i>
-                        <div class="kpi-title" style="color: var(--morado);">Colaborador con Alta</div>
-                        <div class="kpi-value purple">${altaDisplay}</div>
-                        <div class="kpi-subtext"><span>${altaSub}</span><i class="fa-solid fa-chevron-right"></i></div>
+                    <!-- 6. TOTAL DE LEGAJOS INCOMPLETOS Y COLABORADORES CON ALTA -->
+                    <div class="kpi-card card-incomp" onclick="openDetailModal('${prefixTitle} - Legajos Incompletos y Altas', '${saveToStore(incompletos)}')">
+                        <div class="kpi-header">
+                            <span class="kpi-title">LEGAJOS INCOMPLETOS Y CON ALTA</span>
+                            <i class="fa-solid fa-triangle-exclamation kpi-icon"></i>
+                        </div>
+                        <div class="kpi-value-center text-red">${incompletos.length}</div>
+                        <div class="kpi-footer-sub">
+                            <span class="kpi-colab-label">COLABORADORES</span>
+                            <span class="kpi-badge-pill pill-red">${incompletos.length} Incomp. | ${conAlta.length} Con Alta (${porVerAlta.length} por ver)</span>
+                        </div>
                     </div>
                 </div>
             `;
@@ -2358,8 +2484,8 @@
                     <!-- ZONA SUR -->
                     <div class="general-zone-box sur">
                         <div class="general-zone-top">
-                            <span class="general-zone-name"><i class="fa-solid fa-compass" style="color:#ca8a04;"></i> Zona Sur</span>
-                            <span class="status-badge" style="background:#fef08a; color:#854d0e;">${sumS.t} Colaboradores</span>
+                            <span class="general-zone-name"><i class="fa-solid fa-compass" style="color:var(--rojo-liderman);"></i> Zona Sur</span>
+                            <span class="status-badge" style="background:var(--rojo-suave); color:var(--rojo-liderman);">${sumS.t} Colaboradores</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; font-size:11.5px; font-weight:700;">
                             <span>Cumplimiento Legajos:</span>
@@ -2371,7 +2497,7 @@
                         <div class="zone-kpi-mini-grid">
                             <div class="zone-mini-item">
                                 <div class="zone-mini-label">Repo. Finalizado</div>
-                                <div class="zone-mini-val" style="color:#166534;">${sumS.pctF}%</div>
+                                <div class="zone-mini-val" style="color:var(--negro-liderman);">${sumS.pctF}%</div>
                             </div>
                             <div class="zone-mini-item">
                                 <div class="zone-mini-label">Aprobados</div>
@@ -2379,11 +2505,11 @@
                             </div>
                             <div class="zone-mini-item">
                                 <div class="zone-mini-label">Altas Confirmadas</div>
-                                <div class="zone-mini-val" style="color:var(--morado);">${sumS.al}</div>
+                                <div class="zone-mini-val" style="color:var(--negro-liderman);">${sumS.al}</div>
                             </div>
                             <div class="zone-mini-item" style="cursor:pointer;" onclick="openTab(event, 'tab-sur')">
-                                <div class="zone-mini-label" style="color:#2563eb;">Explorar Zona</div>
-                                <div class="zone-mini-val" style="font-size:12.5px; color:#2563eb;">Ir a Sur <i class="fa-solid fa-arrow-right"></i></div>
+                                <div class="zone-mini-label" style="color:var(--negro-liderman);">Explorar Zona</div>
+                                <div class="zone-mini-val" style="font-size:12.5px; color:var(--negro-liderman);">Ir a Sur <i class="fa-solid fa-arrow-right"></i></div>
                             </div>
                         </div>
                     </div>
@@ -2391,8 +2517,8 @@
                     <!-- ZONA CENTRO -->
                     <div class="general-zone-box centro">
                         <div class="general-zone-top">
-                            <span class="general-zone-name"><i class="fa-solid fa-building" style="color:#2563eb;"></i> Zona Centro</span>
-                            <span class="status-badge" style="background:#dbeafe; color:#1e40af;">${sumC.t} Colaboradores</span>
+                            <span class="general-zone-name"><i class="fa-solid fa-building" style="color:var(--negro-liderman);"></i> Zona Centro</span>
+                            <span class="status-badge" style="background:var(--plomo-bg); color:var(--negro-liderman);">${sumC.t} Colaboradores</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; font-size:11.5px; font-weight:700;">
                             <span>Cumplimiento Legajos:</span>
@@ -2404,7 +2530,7 @@
                         <div class="zone-kpi-mini-grid">
                             <div class="zone-mini-item">
                                 <div class="zone-mini-label">Repo. Finalizado</div>
-                                <div class="zone-mini-val" style="color:#166534;">${sumC.pctF}%</div>
+                                <div class="zone-mini-val" style="color:var(--negro-liderman);">${sumC.pctF}%</div>
                             </div>
                             <div class="zone-mini-item">
                                 <div class="zone-mini-label">Aprobados</div>
@@ -2412,11 +2538,11 @@
                             </div>
                             <div class="zone-mini-item">
                                 <div class="zone-mini-label">Altas Confirmadas</div>
-                                <div class="zone-mini-val" style="color:var(--morado);">${sumC.al}</div>
+                                <div class="zone-mini-val" style="color:var(--negro-liderman);">${sumC.al}</div>
                             </div>
                             <div class="zone-mini-item" style="cursor:pointer;" onclick="openTab(event, 'tab-centro')">
-                                <div class="zone-mini-label" style="color:#2563eb;">Explorar Zona</div>
-                                <div class="zone-mini-val" style="font-size:12.5px; color:#2563eb;">Ir a Centro <i class="fa-solid fa-arrow-right"></i></div>
+                                <div class="zone-mini-label" style="color:var(--negro-liderman);">Explorar Zona</div>
+                                <div class="zone-mini-val" style="font-size:12.5px; color:var(--negro-liderman);">Ir a Centro <i class="fa-solid fa-arrow-right"></i></div>
                             </div>
                         </div>
                     </div>
@@ -2424,8 +2550,8 @@
                     <!-- ZONA NORTE -->
                     <div class="general-zone-box norte">
                         <div class="general-zone-top">
-                            <span class="general-zone-name"><i class="fa-solid fa-city" style="color:#16a34a;"></i> Zona Norte</span>
-                            <span class="status-badge" style="background:#dcfce7; color:#166534;">${sumN.t} Colaboradores</span>
+                            <span class="general-zone-name"><i class="fa-solid fa-city" style="color:var(--plomo-oscuro);"></i> Zona Norte</span>
+                            <span class="status-badge" style="background:var(--plomo-bg); color:var(--negro-liderman);">${sumN.t} Colaboradores</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; font-size:11.5px; font-weight:700;">
                             <span>Cumplimiento Legajos:</span>
@@ -2437,7 +2563,7 @@
                         <div class="zone-kpi-mini-grid">
                             <div class="zone-mini-item">
                                 <div class="zone-mini-label">Repo. Finalizado</div>
-                                <div class="zone-mini-val" style="color:#166534;">${sumN.pctF}%</div>
+                                <div class="zone-mini-val" style="color:var(--negro-liderman);">${sumN.pctF}%</div>
                             </div>
                             <div class="zone-mini-item">
                                 <div class="zone-mini-label">Aprobados</div>
@@ -2445,11 +2571,11 @@
                             </div>
                             <div class="zone-mini-item">
                                 <div class="zone-mini-label">Altas Confirmadas</div>
-                                <div class="zone-mini-val" style="color:var(--morado);">${sumN.al}</div>
+                                <div class="zone-mini-val" style="color:var(--negro-liderman);">${sumN.al}</div>
                             </div>
                             <div class="zone-mini-item" style="cursor:pointer;" onclick="openTab(event, 'tab-norte')">
-                                <div class="zone-mini-label" style="color:#2563eb;">Explorar Zona</div>
-                                <div class="zone-mini-val" style="font-size:12.5px; color:#2563eb;">Ir a Norte <i class="fa-solid fa-arrow-right"></i></div>
+                                <div class="zone-mini-label" style="color:var(--negro-liderman);">Explorar Zona</div>
+                                <div class="zone-mini-val" style="font-size:12.5px; color:var(--negro-liderman);">Ir a Norte <i class="fa-solid fa-arrow-right"></i></div>
                             </div>
                         </div>
                     </div>
@@ -2508,7 +2634,7 @@
                     values: [finCount, procCount, sinCount],
                     labels: ['Finalizado', 'En Proceso', 'Sin Registro'],
                     type: 'pie', hole: .65,
-                    marker: { colors: ['#166534', '#2563eb', '#cbd5e1'] },
+                    marker: { colors: ['#D31145', '#334155', '#cbd5e1'] },
                     textinfo: 'percent+value', textposition: 'inside',
                     textfont: { size: 12.5, weight: '800', color: '#ffffff', family: 'Inter' },
                     hoverinfo: 'label+value+percent'
@@ -2638,7 +2764,7 @@
                     values: [repoFinalizado.length, repoEnProceso.length, repoSinReg.length],
                     labels: ['Finalizado', 'En Proceso', 'Sin Registro'],
                     type: 'pie', hole: .65,
-                    marker: { colors: ['#166534', '#2563eb', '#cbd5e1'] },
+                    marker: { colors: ['#D31145', '#334155', '#cbd5e1'] },
                     textinfo: 'percent+value', textposition: 'inside',
                     textfont: { size: 12.5, weight: '800', color: '#ffffff', family: 'Inter' },
                     hoverinfo: 'label+value+percent'
@@ -2716,17 +2842,19 @@
         function renderComparativaSection(containerId, dbCentro, dbSur, dbNorte, dbConsolidado) {
             const calcStats = (data) => {
                 const tot = data.length;
-                const comp = data.filter(r => r.E_LEGAJO === 'COMPLETO').length;
-                const incomp = data.filter(r => r.E_LEGAJO === 'INCOMPLETO').length;
-                const pend = data.filter(r => r.E_LEGAJO === 'PENDIENTE').length;
-                const fin = data.filter(r => r.REPOSITORIO === 'FINALIZADO').length;
-                const proc = data.filter(r => r.REPOSITORIO === 'EN PROCESO').length;
-                const sinreg = data.filter(r => r.REPOSITORIO === 'SIN REGISTRO').length;
-                const aprob = data.filter(r => r.E_FINAL === 'APROBADO').length;
-                const noaprob = data.filter(r => r.E_FINAL === 'NO APROBADO').length;
+                const comp = data.filter(r => clean(r.E_LEGAJO) === 'COMPLETO').length;
+                const incomp = data.filter(r => clean(r.E_LEGAJO) === 'INCOMPLETO').length;
+                const pend = data.filter(r => clean(r.E_LEGAJO) === 'PENDIENTE').length;
+                const fin = data.filter(r => clean(r.REPOSITORIO) === 'FINALIZADO').length;
+                const proc = data.filter(r => clean(r.REPOSITORIO) === 'EN PROCESO').length;
+                const sinreg = data.filter(r => clean(r.REPOSITORIO) === 'SIN REGISTRO').length;
+                const aprob = data.filter(r => clean(r.E_FINAL) === 'APROBADO').length;
+                const noaprob = data.filter(r => clean(r.E_FINAL) === 'NO APROBADO').length;
+                const avanceParcial = data.filter(r => { let p = r.AVANCE_NUM || 0; return p >= 4 && p <= 96; }).length;
+                const conRegCero = data.filter(r => { let p = r.AVANCE_NUM || 0; return clean(r.REPOSITORIO) !== 'SIN REGISTRO' && p === 0; }).length;
                 const altaConf = data.filter(r => isAltaEfectiva(r.ALTA)).length;
                 const altaPorVer = data.filter(r => !isAltaEfectiva(r.ALTA)).length;
-                const asisRevisar = data.filter(r => r.ASISTENCIA === 'POR REVISAR').length;
+                const asisRevisar = data.filter(r => clean(r.ASISTENCIA) === 'POR REVISAR').length;
                 
                 let sumAvance = 0;
                 let countAvance = 0;
@@ -2748,6 +2876,8 @@
                     sinreg, sinregPct: formatPct(sinreg, tot),
                     aprob, aprobPct: formatPct(aprob, tot),
                     noaprob, noaprobPct: formatPct(noaprob, tot),
+                    avanceParcial, avanceParcialPct: formatPct(avanceParcial, tot),
+                    conRegCero, conRegCeroPct: formatPct(conRegCero, tot),
                     altaConf, altaConfPct: formatPct(altaConf, tot),
                     altaPorVer, altaPorVerPct: formatPct(altaPorVer, tot),
                     asisRevisar, asisRevisarPct: formatPct(asisRevisar, tot),
@@ -2773,76 +2903,76 @@
                 <div class="general-zones-grid">
                     <div class="general-zone-box centro" onclick="openDetailModal('Zona Centro', '${saveToStore(dbCentro)}')">
                         <div class="general-zone-top">
-                            <span class="general-zone-name"><i class="fa-solid fa-building" style="color:#2563eb;"></i> Zona Centro</span>
-                            <span class="status-badge" style="background:#dbeafe; color:#1e40af;">${sCentro.total} Reg.</span>
+                            <span class="general-zone-name"><i class="fa-solid fa-building" style="color:var(--negro-liderman);"></i> Zona Centro</span>
+                            <span class="status-badge" style="background:var(--plomo-bg); color:var(--negro-liderman);">${sCentro.total} Reg.</span>
                         </div>
                         <div style="font-size:12px; padding:3px 0; display:flex; justify-content:space-between; border-bottom:1px dashed #e5e7eb;">
-                            <span style="color:var(--gris-texto);">Repo. Finalizado:</span><span style="font-weight:800; color:#166534;">${sCentro.fin} (${sCentro.finPct})</span>
+                            <span style="color:var(--gris-texto);">Repo. Finalizado:</span><span style="font-weight:800; color:var(--negro-liderman);">${sCentro.fin} (${sCentro.finPct})</span>
                         </div>
                         <div style="font-size:12px; padding:3px 0; display:flex; justify-content:space-between; border-bottom:1px dashed #e5e7eb;">
-                            <span style="color:var(--gris-texto);">Legajos Pendientes:</span><span style="font-weight:800; color:var(--amarillo);">${sCentro.pend} (${sCentro.pendPct})</span>
+                            <span style="color:var(--gris-texto);">Legajos Pendientes:</span><span style="font-weight:800; color:var(--plomo-oscuro);">${sCentro.pend} (${sCentro.pendPct})</span>
                         </div>
                         <div style="font-size:12px; padding:3px 0; display:flex; justify-content:space-between; border-bottom:1px dashed #e5e7eb;">
-                            <span style="color:var(--gris-texto);">Legajos Incompletos:</span><span style="font-weight:800; color:var(--alerta);">${sCentro.incomp} (${sCentro.incompPct})</span>
+                            <span style="color:var(--gris-texto);">Legajos Incompletos:</span><span style="font-weight:800; color:var(--rojo-liderman);">${sCentro.incomp} (${sCentro.incompPct})</span>
                         </div>
                         <div style="font-size:12px; padding:3px 0; display:flex; justify-content:space-between; border-bottom:1px dashed #e5e7eb;">
                             <span style="color:var(--gris-texto);">Legajos Completos:</span><span style="font-weight:800; color:var(--rojo-liderman);">${sCentro.comp} (${sCentro.compPct})</span>
                         </div>
                         <div style="font-size:12px; padding:3px 0; display:flex; justify-content:space-between; border-bottom:1px dashed #e5e7eb;">
-                            <span style="color:var(--gris-texto);">Aprobación Final:</span><span style="font-weight:800; color:#166534;">${sCentro.aprob} (${sCentro.aprobPct})</span>
+                            <span style="color:var(--gris-texto);">Aprobación Final:</span><span style="font-weight:800; color:var(--negro-liderman);">${sCentro.aprob} (${sCentro.aprobPct})</span>
                         </div>
                         <div style="font-size:12px; padding:3px 0; display:flex; justify-content:space-between;">
-                            <span style="color:var(--gris-texto);">Colab. con Alta:</span><span style="font-weight:800; color:var(--morado);">${sCentro.altaConf} (${sCentro.altaConfPct}) [${sCentro.altaPorVer} por ver]</span>
+                            <span style="color:var(--gris-texto);">Colab. con Alta:</span><span style="font-weight:800; color:var(--negro-liderman);">${sCentro.altaConf} (${sCentro.altaConfPct}) [${sCentro.altaPorVer} por ver]</span>
                         </div>
                     </div>
 
                     <div class="general-zone-box sur" onclick="openDetailModal('Zona Sur', '${saveToStore(dbSur)}')">
                         <div class="general-zone-top">
-                            <span class="general-zone-name"><i class="fa-solid fa-compass" style="color:#ca8a04;"></i> Zona Sur</span>
-                            <span class="status-badge" style="background:#fef08a; color:#854d0e;">${sSur.total} Reg.</span>
+                            <span class="general-zone-name"><i class="fa-solid fa-compass" style="color:var(--rojo-liderman);"></i> Zona Sur</span>
+                            <span class="status-badge" style="background:var(--rojo-suave); color:var(--rojo-liderman);">${sSur.total} Reg.</span>
                         </div>
                         <div style="font-size:12px; padding:3px 0; display:flex; justify-content:space-between; border-bottom:1px dashed #e5e7eb;">
-                            <span style="color:var(--gris-texto);">Repo. Finalizado:</span><span style="font-weight:800; color:#166534;">${sSur.fin} (${sSur.finPct})</span>
+                            <span style="color:var(--gris-texto);">Repo. Finalizado:</span><span style="font-weight:800; color:var(--negro-liderman);">${sSur.fin} (${sSur.finPct})</span>
                         </div>
                         <div style="font-size:12px; padding:3px 0; display:flex; justify-content:space-between; border-bottom:1px dashed #e5e7eb;">
-                            <span style="color:var(--gris-texto);">Legajos Pendientes:</span><span style="font-weight:800; color:var(--amarillo);">${sSur.pend} (${sSur.pendPct})</span>
+                            <span style="color:var(--gris-texto);">Legajos Pendientes:</span><span style="font-weight:800; color:var(--plomo-oscuro);">${sSur.pend} (${sSur.pendPct})</span>
                         </div>
                         <div style="font-size:12px; padding:3px 0; display:flex; justify-content:space-between; border-bottom:1px dashed #e5e7eb;">
-                            <span style="color:var(--gris-texto);">Legajos Incompletos:</span><span style="font-weight:800; color:var(--alerta);">${sSur.incomp} (${sSur.incompPct})</span>
+                            <span style="color:var(--gris-texto);">Legajos Incompletos:</span><span style="font-weight:800; color:var(--rojo-liderman);">${sSur.incomp} (${sSur.incompPct})</span>
                         </div>
                         <div style="font-size:12px; padding:3px 0; display:flex; justify-content:space-between; border-bottom:1px dashed #e5e7eb;">
                             <span style="color:var(--gris-texto);">Legajos Completos:</span><span style="font-weight:800; color:var(--rojo-liderman);">${sSur.comp} (${sSur.compPct})</span>
                         </div>
                         <div style="font-size:12px; padding:3px 0; display:flex; justify-content:space-between; border-bottom:1px dashed #e5e7eb;">
-                            <span style="color:var(--gris-texto);">Aprobación Final:</span><span style="font-weight:800; color:#166534;">${sSur.aprob} (${sSur.aprobPct})</span>
+                            <span style="color:var(--gris-texto);">Aprobación Final:</span><span style="font-weight:800; color:var(--negro-liderman);">${sSur.aprob} (${sSur.aprobPct})</span>
                         </div>
                         <div style="font-size:12px; padding:3px 0; display:flex; justify-content:space-between;">
-                            <span style="color:var(--gris-texto);">Colab. con Alta:</span><span style="font-weight:800; color:var(--morado);">${sSur.altaConf} (${sSur.altaConfPct}) [${sSur.altaPorVer} por ver]</span>
+                            <span style="color:var(--gris-texto);">Colab. con Alta:</span><span style="font-weight:800; color:var(--negro-liderman);">${sSur.altaConf} (${sSur.altaConfPct}) [${sSur.altaPorVer} por ver]</span>
                         </div>
                     </div>
 
                     <div class="general-zone-box norte" onclick="openDetailModal('Zona Norte', '${saveToStore(dbNorte)}')">
                         <div class="general-zone-top">
-                            <span class="general-zone-name"><i class="fa-solid fa-city" style="color:#16a34a;"></i> Zona Norte</span>
-                            <span class="status-badge" style="background:#dcfce7; color:#166534;">${sNorte.total} Reg.</span>
+                            <span class="general-zone-name"><i class="fa-solid fa-city" style="color:var(--plomo-oscuro);"></i> Zona Norte</span>
+                            <span class="status-badge" style="background:var(--plomo-bg); color:var(--negro-liderman);">${sNorte.total} Reg.</span>
                         </div>
                         <div style="font-size:12px; padding:3px 0; display:flex; justify-content:space-between; border-bottom:1px dashed #e5e7eb;">
-                            <span style="color:var(--gris-texto);">Repo. Finalizado:</span><span style="font-weight:800; color:#166534;">${sNorte.fin} (${sNorte.finPct})</span>
+                            <span style="color:var(--gris-texto);">Repo. Finalizado:</span><span style="font-weight:800; color:var(--negro-liderman);">${sNorte.fin} (${sNorte.finPct})</span>
                         </div>
                         <div style="font-size:12px; padding:3px 0; display:flex; justify-content:space-between; border-bottom:1px dashed #e5e7eb;">
-                            <span style="color:var(--gris-texto);">Legajos Pendientes:</span><span style="font-weight:800; color:var(--amarillo);">${sNorte.pend} (${sNorte.pendPct})</span>
+                            <span style="color:var(--gris-texto);">Legajos Pendientes:</span><span style="font-weight:800; color:var(--plomo-oscuro);">${sNorte.pend} (${sNorte.pendPct})</span>
                         </div>
                         <div style="font-size:12px; padding:3px 0; display:flex; justify-content:space-between; border-bottom:1px dashed #e5e7eb;">
-                            <span style="color:var(--gris-texto);">Legajos Incompletos:</span><span style="font-weight:800; color:var(--alerta);">${sNorte.incomp} (${sNorte.incompPct})</span>
+                            <span style="color:var(--gris-texto);">Legajos Incompletos:</span><span style="font-weight:800; color:var(--rojo-liderman);">${sNorte.incomp} (${sNorte.incompPct})</span>
                         </div>
                         <div style="font-size:12px; padding:3px 0; display:flex; justify-content:space-between; border-bottom:1px dashed #e5e7eb;">
                             <span style="color:var(--gris-texto);">Legajos Completos:</span><span style="font-weight:800; color:var(--rojo-liderman);">${sNorte.comp} (${sNorte.compPct})</span>
                         </div>
                         <div style="font-size:12px; padding:3px 0; display:flex; justify-content:space-between; border-bottom:1px dashed #e5e7eb;">
-                            <span style="color:var(--gris-texto);">Aprobación Final:</span><span style="font-weight:800; color:#166534;">${sNorte.aprob} (${sNorte.aprobPct})</span>
+                            <span style="color:var(--gris-texto);">Aprobación Final:</span><span style="font-weight:800; color:var(--negro-liderman);">${sNorte.aprob} (${sNorte.aprobPct})</span>
                         </div>
                         <div style="font-size:12px; padding:3px 0; display:flex; justify-content:space-between;">
-                            <span style="color:var(--gris-texto);">Colab. con Alta:</span><span style="font-weight:800; color:var(--morado);">${sNorte.altaConf} (${sNorte.altaConfPct}) [${sNorte.altaPorVer} por ver]</span>
+                            <span style="color:var(--gris-texto);">Colab. con Alta:</span><span style="font-weight:800; color:var(--negro-liderman);">${sNorte.altaConf} (${sNorte.altaConfPct}) [${sNorte.altaPorVer} por ver]</span>
                         </div>
                     </div>
                 </div>
@@ -2905,15 +3035,15 @@
                                 <td>${sNorte.aprob} (${sNorte.aprobPct})</td>
                                 <td><strong>${sTotal.aprob} (${sTotal.aprobPct})</strong></td>
                             </tr>
-                            <tr style="background:#fdf4ff;">
-                                <td style="color:var(--morado); font-weight:800;">7. Colaborador con Alta Confirmada</td>
+                            <tr style="background:var(--plomo-bg);">
+                                <td style="color:var(--negro-liderman); font-weight:800;">7. Colaborador con Alta Confirmada</td>
                                 <td>${sCentro.altaConf} (${sCentro.altaConfPct})</td>
                                 <td>${sSur.altaConf} (${sSur.altaConfPct})</td>
                                 <td>${sNorte.altaConf} (${sNorte.altaConfPct})</td>
                                 <td><strong>${sTotal.altaConf} (${sTotal.altaConfPct})</strong></td>
                             </tr>
-                            <tr style="background:#faf5ff;">
-                                <td style="color:#7e22ce;">Colaborador Alta 'Por Ver'</td>
+                            <tr style="background:var(--plomo-fondo);">
+                                <td style="color:var(--plomo-oscuro);">Colaborador Alta 'Por Ver'</td>
                                 <td>${sCentro.altaPorVer} (${sCentro.altaPorVerPct})</td>
                                 <td>${sSur.altaPorVer} (${sSur.altaPorVerPct})</td>
                                 <td>${sNorte.altaPorVer} (${sNorte.altaPorVerPct})</td>
@@ -2991,12 +3121,12 @@
             // 2. COMPARATIVA REPOSITORIO (BARRAS AGRUPADAS)
             let traceFin = {
                 x: zonas, y: [sCentro.fin, sSur.fin, sNorte.fin], name: 'Finalizado', type: 'bar',
-                marker: { color: '#166534' }, text: [sCentro.fin, sSur.fin, sNorte.fin], textposition: 'auto',
+                marker: { color: '#D31145' }, text: [sCentro.fin, sSur.fin, sNorte.fin], textposition: 'auto',
                 textfont: { weight: '800', color: '#fff' }
             };
             let traceProc = {
                 x: zonas, y: [sCentro.proc, sSur.proc, sNorte.proc], name: 'En Proceso', type: 'bar',
-                marker: { color: '#2563eb' }, text: [sCentro.proc, sSur.proc, sNorte.proc], textposition: 'auto',
+                marker: { color: '#334155' }, text: [sCentro.proc, sSur.proc, sNorte.proc], textposition: 'auto',
                 textfont: { weight: '800', color: '#fff' }
             };
             let traceSinReg = {
@@ -3027,7 +3157,7 @@
             };
             let tracePctFin = {
                 x: zonas, y: pctFin, name: '% Repo. Finalizado', type: 'bar',
-                marker: { color: '#166534' }, text: pctFin.map(v => v.toFixed(1) + '%'), textposition: 'auto',
+                marker: { color: '#D31145' }, text: pctFin.map(v => v.toFixed(1) + '%'), textposition: 'auto',
                 textfont: { weight: '800', color: '#fff', size: 12 }
             };
             let layoutCompPct = {
@@ -3046,7 +3176,7 @@
                 values: [sCentro.total, sSur.total, sNorte.total],
                 labels: ['Zona Centro', 'Zona Sur', 'Zona Norte'],
                 type: 'pie', hole: .65,
-                marker: { colors: ['#2563eb', '#ca8a04', '#16a34a'] },
+                marker: { colors: ['#0f1115', '#D31145', '#64748b'] },
                 textinfo: 'percent+value', textposition: 'inside',
                 textfont: { size: 12.5, weight: '800', color: '#ffffff', family: 'Inter' },
                 hoverinfo: 'label+value+percent'
