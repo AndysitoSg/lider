@@ -1239,34 +1239,27 @@
 
     <!-- CONTROLES / FILTROS GLOBALES -->
     <div class="controls">
-        <!-- 1. CARGAR NUEVA BASE (SOLO VISIBLE PARA EL ADMIN) -->
-        <div class="control-group admin-only" id="control-cargar-base">
-            <label><i class="fa-solid fa-file-excel"></i> 1. Cargar Nueva Base</label>
-            <input type="file" id="fileInput" accept=".xlsx, .xls">
-            <span id="loading"><i class="fa-solid fa-spinner fa-spin"></i> Procesando hoja LISTA GENERAL...</span>
-        </div>
-        
-        <!-- 2. BÚSQUEDA RÁPIDA GLOBAL -->
+        <!-- 1. BÚSQUEDA RÁPIDA GLOBAL -->
         <div class="control-group" id="control-busqueda">
-            <label><i class="fa-solid fa-magnifying-glass"></i> 2. Búsqueda Rápida</label>
+            <label><i class="fa-solid fa-magnifying-glass"></i> 1. Búsqueda Rápida</label>
             <input type="text" id="globalSearchInput" class="global-search-input" placeholder="DNI, Nombres, Obs..." onkeyup="renderDashboard()">
         </div>
 
         <!-- 3. FILTRO POR FECHA (NUEVO BOTÓN DE FECHAS SOLICITADO) -->
         <div class="control-group" id="control-fecha">
-            <label><i class="fa-regular fa-calendar-days"></i> 3. Fecha</label>
+            <label><i class="fa-regular fa-calendar-days"></i> 2. Fecha</label>
             <select id="fechaSelect"><option value="TODOS">TODAS LAS FECHAS</option></select>
         </div>
 
         <!-- 4. RECLUTADOR -->
         <div class="control-group" id="control-reclutador">
-            <label><i class="fa-solid fa-user-tie"></i> 4. Reclutador</label>
+            <label><i class="fa-solid fa-user-tie"></i> 3. Reclutador</label>
             <select id="reclutadorSelect"><option value="TODOS">TODOS</option></select>
         </div>
         
         <!-- 5. ESTADO LEGAJO -->
         <div class="control-group" id="control-legajo">
-            <label><i class="fa-solid fa-folder-tree"></i> 5. Estado Legajo</label>
+            <label><i class="fa-solid fa-folder-tree"></i> 4. Estado Legajo</label>
             <select id="estadoLegajoSelect">
                 <option value="TODOS">TODOS</option>
                 <option value="COMPLETO">COMPLETO</option>
@@ -1277,7 +1270,7 @@
 
         <!-- 6. REPOSITORIO -->
         <div class="control-group" id="control-repositorio">
-            <label><i class="fa-solid fa-cloud-arrow-up"></i> 6. Repositorio</label>
+            <label><i class="fa-solid fa-cloud-arrow-up"></i> 5. Repositorio</label>
             <select id="repositorioSelect">
                 <option value="TODOS">TODOS</option>
                 <option value="FINALIZADO">FINALIZADO</option>
@@ -1288,7 +1281,7 @@
 
         <!-- 7. ESTADO FINAL -->
         <div class="control-group" id="control-final">
-            <label><i class="fa-solid fa-circle-check"></i> 7. Estado Final</label>
+            <label><i class="fa-solid fa-circle-check"></i> 6. Estado Final</label>
             <select id="estadoFinalSelect">
                 <option value="TODOS">TODOS</option>
                 <option value="APROBADO">APROBADO</option>
@@ -1298,19 +1291,19 @@
 
         <!-- 8. ALTA -->
         <div class="control-group" id="control-alta">
-            <label><i class="fa-solid fa-user-check"></i> 8. Alta</label>
+            <label><i class="fa-solid fa-user-check"></i> 7. Alta</label>
             <select id="altaSelect"><option value="TODOS">TODOS</option></select>
         </div>
 
         <!-- 9. ASISTENCIA -->
         <div class="control-group" id="control-asistencia">
-            <label><i class="fa-solid fa-clipboard-user"></i> 9. Asistencia</label>
+            <label><i class="fa-solid fa-clipboard-user"></i> 8. Asistencia</label>
             <select id="asistenciaSelect"><option value="TODOS">TODOS</option></select>
         </div>
 
         <!-- 10. DISTRIBUCIÓN: VISIBLE SOLO EN PESTAÑA GENERAL PARA EL ADMIN -->
         <div class="control-group admin-only" id="control-distribucion">
-            <label><i class="fa-solid fa-map-location-dot"></i> 10. Distribución</label>
+            <label><i class="fa-solid fa-map-location-dot"></i> 9. Distribución</label>
             <select id="distribucionSelect"><option value="TODOS">TODOS</option></select>
         </div>
 
@@ -1341,7 +1334,7 @@
         </button>
     </div>
 
-    <!-- VISTAS DEL DASHBOARD -->!-- VISTAS DEL DASHBOARD -->
+    <!-- CONTENEDOR PRINCIPAL DEL DASHBOARD -->
     <div class="container" id="dashboard">
         <div id="tab-general" class="tab-content active"><div id="sec-general"></div></div>
         <div id="tab-centro" class="tab-content"><div id="sec-centro"></div></div>
@@ -1780,7 +1773,12 @@
 
                 parsed.push({
                     'ITEM': cleanRow['ITEM'] || cleanRow['ARTICULO'] || (index + 1),
-                    'FECHA': cleanRow['FECHA'] ? cleanRow['FECHA'].toString().split('T')[0] : '',
+                    'FECHA': (function(f) {
+                        if (!f) return '';
+                        let s = f.toString().trim();
+                        if (s.includes('T')) return s.split('T')[0];
+                        return s;
+                    })(cleanRow['FECHA']),
                     'ZONA': zona || 'ZONA NO DEFINIDA',
                     'DISTRIBUCION': (cleanRow['DISTRIBUCION'] || '').toString().trim().toUpperCase(),
                     'TP_DOC': (cleanRow['TP. DE DOC'] || cleanRow['TP DE DOC'] || cleanRow['T. DE DOCUMENTO'] || 'DNI').toString().trim().toUpperCase(),
@@ -1951,9 +1949,38 @@
 
         function updateContextualFilters(tabId) {
             const distControl = document.getElementById('control-distribucion');
+            const selectFecha = document.getElementById('fechaSelect');
             const selectRec = document.getElementById('reclutadorSelect');
             const selectAlta = document.getElementById('altaSelect');
             const selectAsis = document.getElementById('asistenciaSelect');
+
+            // 0. Poblar dinámicamente el selector de Fechas únicas desde la base
+            if (selectFecha) {
+                const curFecha = selectFecha.value;
+                const setFecha = new Set();
+                dbFull.forEach(r => {
+                    if (r.FECHA && r.FECHA.trim() !== '') {
+                        setFecha.add(r.FECHA.trim());
+                    }
+                });
+                selectFecha.innerHTML = '<option value="TODOS">TODAS LAS FECHAS</option>';
+                // Ordenar fechas respetando orden numérico/cronológico si es d/m/yyyy
+                const sortedFechas = Array.from(setFecha).sort((a, b) => {
+                    let parseDate = (dStr) => {
+                        let parts = dStr.split(/[\/\-]/);
+                        if (parts.length === 3) {
+                            if (parts[0].length === 4) return new Date(parts[0], parts[1]-1, parts[2]).getTime();
+                            return new Date(parts[2], parts[1]-1, parts[0]).getTime();
+                        }
+                        return 0;
+                    };
+                    return parseDate(a) - parseDate(b);
+                });
+                sortedFechas.forEach(f => {
+                    selectFecha.innerHTML += `<option value="${f}">${f}</option>`;
+                });
+                selectFecha.value = setFecha.has(curFecha) ? curFecha : 'TODOS';
+            }
 
             // 1. Mostrar/Ocultar Distribución: SOLO visible en pestaña GENERAL
             if (tabId === 'tab-general') {
@@ -2180,7 +2207,7 @@
         }
 
         // --- LECTOR DE EXCEL EXCLUSIVO PARA 'LISTA GENERAL' ---
-        document.getElementById('fileInput').addEventListener('change', function(e) {
+        const fileInpEl = document.getElementById('fileInput'); if (fileInpEl) fileInpEl.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
             document.getElementById('loading').style.display = 'inline';
@@ -2224,7 +2251,12 @@
 
                         parsed.push({
                             'ITEM': cleanRow['ITEM'] || (index + 1),
-                            'FECHA': cleanRow['FECHA'] ? cleanRow['FECHA'].toString().split('T')[0] : '',
+                            'FECHA': (function(f) {
+                        if (!f) return '';
+                        let s = f.toString().trim();
+                        if (s.includes('T')) return s.split('T')[0];
+                        return s;
+                    })(cleanRow['FECHA']),
                             'ZONA': zona || 'ZONA NO DEFINIDA',
                             'DISTRIBUCION': (cleanRow['DISTRIBUCION'] || '').toString().trim().toUpperCase(),
                             'TP_DOC': (cleanRow['TP. DE DOC'] || cleanRow['T. DE DOCUMENTO'] || cleanRow['TIPO DOC'] || 'DNI').toString().trim().toUpperCase(),
