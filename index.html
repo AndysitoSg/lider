@@ -416,12 +416,15 @@
         /* TARJETAS DE KPIS - EN EL ORDEN EXACTO SOLICITADO */
         .kpi-grid { 
         display: grid; 
-        grid-template-columns: repeat(6, 1fr); 
-        gap: 14px; 
+        grid-template-columns: repeat(7, 1fr); 
+        gap: 12px; 
         margin-bottom: 24px; 
     }
-    @media (max-width: 1280px) {
-        .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 1400px) {
+        .kpi-grid { grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    }
+    @media (max-width: 992px) {
+        .kpi-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
     }
     @media (max-width: 768px) {
         .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
@@ -455,6 +458,7 @@
     .kpi-card.card-cero { border-top-color: var(--plomo-medio); }
     .kpi-card.card-sinreg { border-top-color: var(--plomo-claro); }
     .kpi-card.card-incomp { border-top-color: var(--rojo-liderman); }
+    .kpi-card.card-alta { border-top-color: var(--negro-liderman); }
     
     .kpi-card .kpi-header {
         display: flex;
@@ -1788,7 +1792,7 @@
                     'AVANCE_STR': avanceStr || '0%',
                     'AVANCE_NUM': avanceNum,
                     'RECLUTADOR': (cleanRow['RECLUTADOR'] || 'SIN ASIGNAR').toString().trim().toUpperCase(),
-                    'E_LEGAJO': (cleanRow['E.LEGAJO'] || cleanRow['LEGAJO'] || 'PENDIENTE').toString().trim().toUpperCase(),
+                    'E_LEGAJO': (clean(cleanRow['E.LEGAJO'] || cleanRow['ESTADO LEGAJO'] || cleanRow['ESTADO_LEGAJO'] || cleanRow['E. LEGAJO'] || cleanRow['E_LEGAJO'] || cleanRow['LEGAJO'] || cleanRow['ESTADO DE LEGAJO']) || 'PENDIENTE'),
                     'OBS': (cleanRow['OBS'] || cleanRow['OBSERVACION'] || '-').toString().trim(),
                     'REGULARIZACION': (cleanRow['REGULARIZACION'] || '').toString().trim(),
                     'E_FINAL': (cleanRow['E.FINAL'] || cleanRow['ESTADO FINAL'] || 'NO APROBADO').toString().trim().toUpperCase()
@@ -2232,7 +2236,7 @@
                             'AVANCE_STR': avanceStr || '0%',
                             'AVANCE_NUM': avanceNum,
                             'RECLUTADOR': (cleanRow['RECLUTADOR'] || 'SIN ASIGNAR').toString().trim().toUpperCase(),
-                            'E_LEGAJO': (cleanRow['E.LEGAJO'] || cleanRow['LEGAJO'] || 'PENDIENTE').toString().trim().toUpperCase(),
+                            'E_LEGAJO': (clean(cleanRow['E.LEGAJO'] || cleanRow['ESTADO LEGAJO'] || cleanRow['ESTADO_LEGAJO'] || cleanRow['E. LEGAJO'] || cleanRow['E_LEGAJO'] || cleanRow['LEGAJO'] || cleanRow['ESTADO DE LEGAJO']) || 'PENDIENTE'),
                             'OBS': (cleanRow['OBS'] || cleanRow['OBSERVACION'] || '-').toString().trim(),
                             'REGULARIZACION': (cleanRow['REGULARIZACION'] || '').toString().trim(),
                             'E_FINAL': (cleanRow['E.FINAL'] || cleanRow['ESTADO FINAL'] || 'NO APROBADO').toString().trim().toUpperCase()
@@ -2338,7 +2342,7 @@
 
         // HELPER PARA CONSTRUIR LAS TARJETAS EN EL ORDEN EXACTO SOLICITADO:
         // [Total Registros] -> [Repositorio Finalizado] -> [Legajos Pendientes] -> [Legajos Incompletos] -> [Legajos Completos] -> [Aprobación Final] -> [Colaborador con Alta]
-                function buildOrderedKpisHtml(prefixTitle, data) {
+                        function buildOrderedKpisHtml(prefixTitle, data) {
             const total = data.length;
             const aprobados = data.filter(r => clean(r.E_FINAL) === 'APROBADO');
             const avanceParcial = data.filter(r => {
@@ -2354,6 +2358,7 @@
                 let repo = clean(r.REPOSITORIO);
                 return repo === 'SIN REGISTRO';
             });
+            // Opción A: Conteo explícito cuando la columna de legajo indica INCOMPLETO
             const incompletos = data.filter(r => clean(r.E_LEGAJO) === 'INCOMPLETO');
             const conAlta = data.filter(r => isAltaEfectiva(r.ALTA));
             const porVerAlta = data.filter(r => !isAltaEfectiva(r.ALTA));
@@ -2425,16 +2430,29 @@
                         </div>
                     </div>
 
-                    <!-- 6. TOTAL DE LEGAJOS INCOMPLETOS Y COLABORADORES CON ALTA -->
-                    <div class="kpi-card card-incomp" onclick="openDetailModal('${prefixTitle} - Legajos Incompletos y Altas', '${saveToStore(incompletos)}')">
+                    <!-- 6. TOTAL DE LEGAJOS INCOMPLETOS (INDEPENDIENTE) -->
+                    <div class="kpi-card card-incomp" onclick="openDetailModal('${prefixTitle} - Legajos Incompletos', '${saveToStore(incompletos)}')">
                         <div class="kpi-header">
-                            <span class="kpi-title">LEGAJOS INCOMPLETOS Y CON ALTA</span>
+                            <span class="kpi-title">TOTAL DE LEGAJOS INCOMPLETOS</span>
                             <i class="fa-solid fa-triangle-exclamation kpi-icon"></i>
                         </div>
                         <div class="kpi-value-center text-red">${incompletos.length}</div>
                         <div class="kpi-footer-sub">
                             <span class="kpi-colab-label">COLABORADORES</span>
-                            <span class="kpi-badge-pill pill-red">${incompletos.length} Incomp. | ${conAlta.length} Con Alta (${porVerAlta.length} por ver)</span>
+                            <span class="kpi-badge-pill pill-red">${formatPct(incompletos.length, total)} Con observaciones</span>
+                        </div>
+                    </div>
+
+                    <!-- 7. TOTAL DE COLABORADORES CON ALTA (INDEPENDIENTE) -->
+                    <div class="kpi-card card-alta" onclick="openDetailModal('${prefixTitle} - Colaboradores con Alta', '${saveToStore(conAlta.length > 0 ? conAlta : porVerAlta)}')">
+                        <div class="kpi-header">
+                            <span class="kpi-title">TOTAL DE COLABORADORES CON ALTA</span>
+                            <i class="fa-solid fa-user-check kpi-icon"></i>
+                        </div>
+                        <div class="kpi-value-center">${conAlta.length}</div>
+                        <div class="kpi-footer-sub">
+                            <span class="kpi-colab-label">COLABORADORES</span>
+                            <span class="kpi-badge-pill">${conAlta.length} Con Alta (${porVerAlta.length} por ver)</span>
                         </div>
                     </div>
                 </div>
